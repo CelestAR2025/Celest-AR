@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solar System AR Marker</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        h1 {
+            color: #FFD700;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+        }
+        .marker-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            border: 2px solid #FFD700;
+        }
+        .marker-image {
+            width: 300px;
+            height: 300px;
+            border: 3px solid #000;
+            background: white;
+            margin: 20px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: #000;
+            position: relative;
+        }
+        .marker-pattern {
+            width: 280px;
+            height: 280px;
+            background: #000;
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            grid-template-rows: repeat(8, 1fr);
+        }
+        .marker-cell {
+            border: 1px solid #333;
+        }
+        .white { background: white; }
+        .black { background: black; }
+        .instructions {
+            text-align: left;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .step {
+            margin: 15px 0;
+            padding: 10px;
+            background: rgba(255, 215, 0, 0.1);
+            border-left: 4px solid #FFD700;
+        }
+        .download-btn {
+            background: #FFD700;
+            color: #000;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s;
+        }
+        .download-btn:hover {
+            background: #FFC700;
+            transform: translateY(-2px);
+        }
+        .hiro-marker {
+            width: 300px;
+            height: 300px;
+            border: 3px solid #000;
+            background: white;
+            margin: 20px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .hiro-pattern {
+            width: 280px;
+            height: 280px;
+            background: white;
+            border: 2px solid #000;
+            position: relative;
+        }
+        .hiro-inner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 180px;
+            height: 180px;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .hiro-center {
+            width: 80px;
+            height: 80px;
+            background: white;
+        }
+        .warning {
+            background: rgba(255, 0, 0, 0.2);
+            border: 2px solid #ff4444;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌟 Solar System AR Marker 🌟</h1>
+        
+        <div class="marker-section">
+            <h2>Current Marker (Temporary)</h2>
+            <p>Right now, your app is using the <strong>HIRO marker</strong> as a placeholder for the solar system marker.</p>
+            
+            <div class="hiro-marker">
+                <div class="hiro-pattern">
+                    <div class="hiro-inner">
+                        <div class="hiro-center"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="warning">
+                <strong>⚠️ Important:</strong> The solar_system.patt file currently uses the same pattern as earth.patt. 
+                For your thesis, you should create a unique solar system marker.
+            </div>
+            
+            <button class="download-btn" onclick="downloadHiroMarker()">📥 Download HIRO Marker (Current)</button>
+        </div>
+
+        <div class="instructions">
+            <h2>📋 How to Use This Marker:</h2>
+            
+            <div class="step">
+                <strong>Step 1:</strong> Print the HIRO marker above on a white paper (A4 size recommended)
+            </div>
+            
+            <div class="step">
+                <strong>Step 2:</strong> Make sure the marker is printed clearly with good contrast
+            </div>
+            
+            <div class="step">
+                <strong>Step 3:</strong> Open your Solar System AR app on your phone/computer
+            </div>
+            
+            <div class="step">
+                <strong>Step 4:</strong> Point your camera at the printed HIRO marker
+            </div>
+            
+            <div class="step">
+                <strong>Step 5:</strong> Watch the entire solar system appear in AR! 🚀
+            </div>
+        </div>
+
+        <div class="marker-section">
+            <h2>🎨 Create Your Own Solar System Marker</h2>
+            <p>For a more professional thesis presentation, you should create a custom solar system marker:</p>
+            
+            <div class="instructions">
+                <div class="step">
+                    <strong>Option 1 - Online Generator:</strong>
+                    <br>• Visit: <a href="https://ar-js-org.github.io/AR.js/three.js/examples/marker-training/examples/generator.html" target="_blank" style="color: #FFD700;">AR.js Marker Generator</a>
+                    <br>• Upload a solar system image (planets, sun, etc.)
+                    <br>• Download the generated .patt file
+                    <br>• Replace the current solar_system.patt file
+                </div>
+                
+                <div class="step">
+                    <strong>Option 2 - Use Existing Image:</strong>
+                    <br>• Find a simple, high-contrast solar system image
+                    <br>• Make sure it has clear black and white patterns
+                    <br>• Use the AR.js marker generator to convert it
+                </div>
+                
+                <div class="step">
+                    <strong>Option 3 - Design Your Own:</strong>
+                    <br>• Create a simple solar system design in any image editor
+                    <br>• Use high contrast (black and white works best)
+                    <br>• Keep the design simple but recognizable
+                    <br>• Generate the marker pattern online
+                </div>
+            </div>
+        </div>
+
+        <div class="marker-section">
+            <h2>🔧 Technical Notes</h2>
+            <p>Your AR app currently looks for:</p>
+            <ul style="text-align: left; max-width: 500px; margin: 0 auto;">
+                <li><strong>File:</strong> /markers/solar_system.patt</li>
+                <li><strong>Current pattern:</strong> Same as earth.patt (temporary)</li>
+                <li><strong>Fallback:</strong> HIRO marker pattern</li>
+                <li><strong>Marker ID:</strong> marker-solar-system</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function downloadHiroMarker() {
+            // Create a canvas to draw the HIRO marker
+            const canvas = document.createElement('canvas');
+            canvas.width = 400;
+            canvas.height = 400;
+            const ctx = canvas.getContext('2d');
+            
+            // White background
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, 400, 400);
+            
+            // Black border
+            ctx.fillStyle = 'black';
+            ctx.fillRect(0, 0, 400, 20);
+            ctx.fillRect(0, 380, 400, 20);
+            ctx.fillRect(0, 0, 20, 400);
+            ctx.fillRect(380, 0, 20, 400);
+            
+            // Black inner square
+            ctx.fillRect(110, 110, 180, 180);
+            
+            // White center square
+            ctx.fillStyle = 'white';
+            ctx.fillRect(160, 160, 80, 80);
+            
+            // Download the image
+            const link = document.createElement('a');
+            link.download = 'hiro-marker-solar-system.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+    </script>
+</body>
+</html>
