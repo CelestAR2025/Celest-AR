@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Constellation AR</title>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.rawgit.com/jeromeetienne/AR.js/2.2.1/aframe/build/aframe-ar.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/aframevr/aframe@master/dist/aframe-extras.min.js"></script>
+
+    <style>
+      body { margin: 0; overflow: hidden; font-family: Arial, sans-serif; }
+      #ui {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        background: rgba(0,0,0,0.6);
+        padding: 10px 15px;
+        border-radius: 10px;
+      }
+      #ui button {
+        padding: 8px 12px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        background: #1976d2;
+        color: white;
+        font-size: 14px;
+        transition: 0.3s;
+      }
+      #ui button:hover { background: #0d47a1; }
+      #infoBox {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0,0,0,0.8);
+        color: white;
+        padding: 15px;
+        border-radius: 10px;
+        max-width: 400px;
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <a-scene embedded arjs="trackingMethod: best; sourceType: webcam;">
+      <!-- Marker -->
+      <a-marker preset="hiro" id="constellation-marker">
+        <a-entity id="constellation-model"
+          gltf-model="url(models/stars/orion.glb)"
+          scale="0.5 0.5 0.5"
+          position="0 0 0"
+          rotation="0 0 0"
+          gesture-handler>
+        </a-entity>
+      </a-marker>
+
+      <a-entity camera></a-entity>
+    </a-scene>
+
+    <!-- UI buttons -->
+    <div id="ui">
+      <button onclick="changeConstellation('orion')">Orion</button>
+      <button onclick="changeConstellation('taurus')">Taurus</button>
+      <button onclick="changeConstellation('leo')">Leo</button>
+      <button onclick="changeConstellation('virgo')">Virgo</button>
+      <button onclick="changeConstellation('aquarius')">Aquarius</button>
+    </div>
+
+    <div id="infoBox"></div>
+
+    <script>
+      // Gesture controls (pinch to zoom, drag to rotate)
+      AFRAME.registerComponent("gesture-handler", {
+        schema: {
+          minScale: { default: 0.3 },
+          maxScale: { default: 3 }
+        },
+        init: function () {
+          this.handleScale = this.handleScale.bind(this);
+          this.handleRotation = this.handleRotation.bind(this);
+          this.scaleFactor = 1;
+          this.rotation = { x: 0, y: 0 };
+          this.startX = 0;
+          this.startY = 0;
+
+          this.el.sceneEl.canvas.addEventListener("wheel", this.handleScale);
+          this.el.sceneEl.canvas.addEventListener("mousedown", (e) => {
+            this.dragging = true;
+            this.startX = e.clientX;
+            this.startY = e.clientY;
+          });
+          window.addEventListener("mouseup", () => (this.dragging = false));
+          window.addEventListener("mousemove", this.handleRotation);
+        },
+        handleScale: function (evt) {
+          evt.preventDefault();
+          const scale = this.el.object3D.scale;
+          let factor = evt.deltaY < 0 ? 1.1 : 0.9;
+          this.scaleFactor = Math.min(
+            this.data.maxScale,
+            Math.max(this.data.minScale, this.scaleFactor * factor)
+          );
+          scale.set(this.scaleFactor, this.scaleFactor, this.scaleFactor);
+        },
+        handleRotation: function (evt) {
+          if (!this.dragging) return;
+          let dx = evt.clientX - this.startX;
+          let dy = evt.clientY - this.startY;
+          this.rotation.y += dx * 0.5;
+          this.rotation.x += dy * 0.5;
+          this.el.object3D.rotation.set(
+            THREE.MathUtils.degToRad(this.rotation.x),
+            THREE.MathUtils.degToRad(this.rotation.y),
+            0
+          );
+          this.startX = evt.clientX;
+          this.startY = evt.clientY;
+        }
+      });
+
+      // Constellation data
+      const constellations = {
+        orion: {
+          model: "models/stars/orion.glb",
+          info: "Orion: Known as 'The Hunter', one of the most recognizable constellations."
+        },
+        taurus: {
+          model: "models/stars/taurus.glb",
+          info: "Taurus: Represents the bull in Greek mythology."
+        },
+        leo: {
+          model: "models/stars/leo.glb",
+          info: "Leo: Symbolizes the lion, linked to the Nemean Lion of Hercules' myth."
+        },
+        virgo: {
+          model: "models/stars/virgo.glb",
+          info: "Virgo: The maiden, one of the largest constellations in the sky."
+        },
+        aquarius: {
+          model: "models/stars/aquarius.glb",
+          info: "Aquarius: Known as the water bearer, part of the zodiac constellations."
+        }
+      };
+
+      function changeConstellation(name) {
+        const entity = document.querySelector("#constellation-model");
+        entity.setAttribute("gltf-model", `url(${constellations[name].model})`);
+        
+        // Show info box
+        const infoBox = document.getElementById("infoBox");
+        infoBox.innerText = constellations[name].info;
+        infoBox.style.display = "block";
+
+        // Speech synthesis
+        const utter = new SpeechSynthesisUtterance(constellations[name].info);
+        speechSynthesis.speak(utter);
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Big Dipper Constellation AR</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Explore the Big Dipper constellation in Augmented Reality">
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.rawgit.com/jeromeetienne/AR.js/2.2.1/aframe/build/aframe-ar.js"></script>
+    <link rel="stylesheet" href="constellation-styles.css">
+  </head>
+  <body>
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="loading-screen">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">Loading Constellation AR</div>
+      <div class="loading-subtext">Please allow camera access</div>
+    </div>
+
+    <!-- Header -->
+    <div class="constellation-header">
+      <div class="header-content">
+        <div>
+          <div class="constellation-title">🌟 Big Dipper</div>
+          <div class="constellation-subtitle">Constellation AR Experience</div>
+        </div>
+        <div class="status-indicator">
+          <div id="statusDot" class="status-dot"></div>
+          <div id="statusText" class="status-text">Scanning...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Control Panel -->
+    <div class="control-panel">
+      <div class="control-title">Constellation Views</div>
+      <div class="control-buttons">
+        <button id="basicBtn" class="control-btn active" onclick="showBigDipper()">
+          🌌 Basic View
+        </button>
+        <button id="namesBtn" class="control-btn" onclick="showBigDipperWithName()">
+          ✨ With Star Names
+        </button>
+      </div>
+    </div>
+
+    <!-- Instructions Panel -->
+    <div class="instructions-panel">
+      <div class="instructions-title">How to Use</div>
+      <div class="instruction-item">
+        <div class="instruction-icon">1</div>
+        <span>Point camera at Hiro marker</span>
+      </div>
+      <div class="instruction-item">
+        <div class="instruction-icon">2</div>
+        <span>Wait for constellation to appear</span>
+      </div>
+      <div class="instruction-item">
+        <div class="instruction-icon">3</div>
+        <span>Use buttons to switch views</span>
+      </div>
+      <div class="instruction-item">
+        <div class="instruction-icon">4</div>
+        <span>Explore constellation details</span>
+      </div>
+    </div>
+
+    <!-- Info Panel -->
+    <div id="infoBox" class="info-panel">
+      <button class="info-close" onclick="closeInfo()">×</button>
+      <div id="infoContent"></div>
+    </div>
+
+    <!-- AR.js Scene -->
+    <a-scene embedded arjs>
+       <!-- Marker -->
+       <a-marker preset="hiro">
+        <!-- Big Dipper Constellation Model - Single Plane -->
+        <a-plane id="bigDipperModel" 
+          src="models/Constellations/bigdipper.png"
+          transparent="true" 
+          width="2" height="2" 
+          rotation="-90 0 0">
+        </a-plane>
+      </a-marker>
+
+      <!-- Camera -->
+      <a-entity camera></a-entity>
+    </a-scene>
+
+     <script>
+       let bigDipperModel = null;
+       let infoBox = null;
+       let infoContent = null;
+       let hasSpoken = false;
+       let isShowingWithNames = false; // Track current state
+       let clickHandled = false; // Prevent multiple rapid clicks
+       let basicBtn = null;
+       let namesBtn = null;
+       let statusDot = null;
+       let statusText = null;
+       let loadingScreen = null;
+
+
+       // Voice speech function
+       function speak(text) {
+         if ('speechSynthesis' in window) {
+           speechSynthesis.cancel();
+           const utterance = new SpeechSynthesisUtterance(text);
+           utterance.lang = 'en-US';
+           utterance.rate = 0.9;
+           utterance.pitch = 1;
+           speechSynthesis.speak(utterance);
+         }
+       }
+
+       // Get elements safely
+       function getElements() {
+         if (!bigDipperModel) {
+           bigDipperModel = document.getElementById("bigDipperModel");
+         }
+         if (!infoBox) {
+           infoBox = document.getElementById("infoBox");
+         }
+         if (!infoContent) {
+           infoContent = document.getElementById("infoContent");
+         }
+         if (!basicBtn) {
+           basicBtn = document.getElementById("basicBtn");
+         }
+         if (!namesBtn) {
+           namesBtn = document.getElementById("namesBtn");
+         }
+         if (!statusDot) {
+           statusDot = document.getElementById("statusDot");
+         }
+         if (!statusText) {
+           statusText = document.getElementById("statusText");
+         }
+         if (!loadingScreen) {
+           loadingScreen = document.getElementById("loadingScreen");
+         }
+       }
+
+       // Update button states
+       function updateButtonStates() {
+         if (basicBtn && namesBtn) {
+           if (isShowingWithNames) {
+             basicBtn.classList.remove('active');
+             namesBtn.classList.add('active');
+           } else {
+             basicBtn.classList.add('active');
+             namesBtn.classList.remove('active');
+           }
+         }
+       }
+
+       // Update status indicator
+       function updateStatus(text, active = false) {
+         if (statusText) {
+           statusText.textContent = text;
+         }
+         if (statusDot) {
+           if (active) {
+             statusDot.classList.add('active');
+           } else {
+             statusDot.classList.remove('active');
+           }
+         }
+       }
+
+       // Close info panel
+       function closeInfo() {
+         if (infoBox) {
+           infoBox.style.display = 'none';
+         }
+       }
+
+       // Hide loading screen
+       function hideLoading() {
+         if (loadingScreen) {
+           loadingScreen.style.display = 'none';
+         }
+       }
+
+       // Zoom feature (wheel + pinch)
+       (function setupZoom(){
+         let baseScale = 1;
+         let currentScale = 1;
+         const minScale = 0.3;
+         const maxScale = 4;
+         let pinchStartDist = 0;
+         let isPinching = false;
+
+         function getModel(){
+           if (!bigDipperModel) bigDipperModel = document.getElementById('bigDipperModel');
+           return bigDipperModel;
+         }
+         function applyScale(s){
+           const m = getModel();
+           if (!m) return;
+           m.setAttribute('scale', `${s} ${s} ${s}`);
+         }
+         function clamp(v,min,max){ return Math.min(max, Math.max(min, v)); }
+
+         window.addEventListener('wheel', function(e){
+           const delta = -e.deltaY * 0.0015;
+           currentScale = clamp(currentScale + delta, minScale, maxScale);
+           applyScale(currentScale);
+         }, { passive: true });
+
+         document.addEventListener('touchstart', function(e){
+           if (e.touches && e.touches.length === 2){
+             isPinching = true;
+             pinchStartDist = Math.hypot(
+               e.touches[0].clientX - e.touches[1].clientX,
+               e.touches[0].clientY - e.touches[1].clientY
+             );
+             baseScale = currentScale;
+           }
+         }, { passive: true });
+
+         document.addEventListener('touchmove', function(e){
+           if (!isPinching || !(e.touches && e.touches.length === 2)) return;
+           const dist = Math.hypot(
+             e.touches[0].clientX - e.touches[1].clientX,
+             e.touches[0].clientY - e.touches[1].clientY
+           );
+           const factor = dist / (pinchStartDist || dist);
+           currentScale = clamp(baseScale * factor, minScale, maxScale);
+           applyScale(currentScale);
+         }, { passive: true });
+
+         document.addEventListener('touchend', function(e){
+           if (e.touches.length < 2){ isPinching = false; }
+         });
+       })();
+
+
+       // Auto-show info when marker is detected
+       function showAutoInfo() {
+         if (!hasSpoken) {
+           getElements();
+           
+           // Initialize state - make sure we start with basic Big Dipper
+           isShowingWithNames = false;
+           clickHandled = false;
+           updateButtonStates();
+           updateStatus("Constellation Detected!", true);
+           hideLoading();
+           
+           if (infoContent) {
+             infoContent.innerHTML = `
+               <div class="info-title">🌟 Big Dipper Detected!</div>
+               <div class="info-content">
+                 The Big Dipper is an asterism in the constellation Ursa Major. It is one of the most recognizable star patterns in the night sky.
+               </div>
+               <div class="info-details">
+                 <strong>Tip:</strong> Use the control buttons above to switch between different views of the constellation.
+               </div>
+             `;
+           }
+           
+           if (infoBox) {
+             infoBox.style.display = "block";
+           }
+           
+           // Voice speech
+           speak("Big Dipper detected! The Big Dipper is an asterism in the constellation Ursa Major. It is one of the most recognizable star patterns in the night sky. Use the buttons to switch between different views.");
+           
+           hasSpoken = true;
+           
+           // Auto-hide after 12 seconds
+           setTimeout(() => {
+             if (infoBox) {
+               infoBox.style.display = "none";
+             }
+           }, 12000);
+         }
+       }
+
+       function showBigDipper() {
+         console.log("Switching to Big Dipper...");
+         
+         getElements();
+         
+         // Update state
+         isShowingWithNames = false;
+         updateButtonStates();
+         
+         if (bigDipperModel) {
+           // Change texture to basic Big Dipper
+           bigDipperModel.setAttribute("src", "models/Constellations/bigdipper.png");
+           console.log("Changed texture to basic Big Dipper");
+         } else {
+           console.error("Big Dipper model not found!");
+         }
+         
+         if (infoContent) {
+           infoContent.innerHTML = `
+             <div class="info-title">🌌 Big Dipper</div>
+             <div class="info-content">
+               The Big Dipper is an asterism in the constellation Ursa Major. It is one of the most recognizable star patterns in the night sky.
+             </div>
+             <div class="info-details">
+               <strong>Fun Fact:</strong> The Big Dipper is not actually a constellation itself, but part of the larger Ursa Major (Great Bear) constellation.
+             </div>
+           `;
+         }
+         
+         if (infoBox) {
+           infoBox.style.display = "block";
+         }
+         
+         // Voice speech
+         speak("Showing Big Dipper constellation. The Big Dipper is an asterism in the constellation Ursa Major.");
+       }
+
+       function showBigDipperWithName() {
+         console.log("Switching to Big Dipper with Names...");
+         
+         getElements();
+         
+         // Update state
+         isShowingWithNames = true;
+         updateButtonStates();
+         
+         if (bigDipperModel) {
+           // Change texture to Big Dipper with names
+           bigDipperModel.setAttribute("src", "models/Constellations/bigdipper-with-name.png");
+           console.log("Changed texture to Big Dipper with names");
+         } else {
+           console.error("Big Dipper model not found!");
+         }
+         
+         if (infoContent) {
+           infoContent.innerHTML = `
+             <div class="info-title">✨ Big Dipper with Star Names</div>
+             <div class="info-content">
+               This version shows the names of the seven bright stars that form the Big Dipper.
+             </div>
+             <div class="info-details">
+               <strong>Star Names:</strong><br>
+               • Dubhe (α Ursae Majoris)<br>
+               • Merak (β Ursae Majoris)<br>
+               • Phecda (γ Ursae Majoris)<br>
+               • Megrez (δ Ursae Majoris)<br>
+               • Alioth (ε Ursae Majoris)<br>
+               • Mizar (ζ Ursae Majoris)<br>
+               • Alkaid (η Ursae Majoris)
+             </div>
+           `;
+         }
+         
+         if (infoBox) {
+           infoBox.style.display = "block";
+         }
+         
+         // Voice speech
+         speak("Showing Big Dipper with star names. This version shows the names of its seven stars: Dubhe, Merak, Phecda, Megrez, Alioth, Mizar, and Alkaid.");
+       }
+
+       // Listen for marker detection events
+       document.addEventListener('DOMContentLoaded', function() {
+         // Wait for A-Frame to load
+         setTimeout(() => {
+           const marker = document.querySelector('a-marker');
+           if (marker) {
+             // Listen for marker found event
+             marker.addEventListener('markerFound', function() {
+               console.log('Marker detected!');
+               updateStatus("Constellation Detected!", true);
+               showAutoInfo();
+             });
+             
+             // Listen for marker lost event
+             marker.addEventListener('markerLost', function() {
+               console.log('Marker lost!');
+               updateStatus("Scanning...", false);
+               hasSpoken = false; // Reset for next detection
+             });
+           }
+           
+           // Initialize elements
+           getElements();
+           
+           // Check if model element exists
+           console.log("Big Dipper Model element:", bigDipperModel);
+           console.log("Info Box element:", infoBox);
+           
+           // Test button functionality
+           console.log("Testing button functions...");
+           
+           // Test image loading
+           const img1 = new Image();
+           img1.onload = () => console.log("✅ Big Dipper image loaded successfully");
+           img1.onerror = () => console.error("❌ Big Dipper image failed to load");
+           img1.src = "models/Constellations/bigdipper.png";
+           
+           const img2 = new Image();
+           img2.onload = () => console.log("✅ Big Dipper with Name image loaded successfully");
+           img2.onerror = () => console.error("❌ Big Dipper with Name image failed to load");
+           img2.src = "Constellations/png/bigdipper-with-name.png";
+           
+           // Test functions are accessible globally
+           console.log("showBigDipper function:", typeof showBigDipper);
+           console.log("showBigDipperWithName function:", typeof showBigDipperWithName);
+           
+           // Initialize button states
+           updateButtonStates();
+           
+           // Hide loading screen after 3 seconds if marker not detected
+           setTimeout(() => {
+             if (loadingScreen && loadingScreen.style.display !== 'none') {
+               hideLoading();
+               updateStatus("Ready to Scan", false);
+             }
+           }, 3000);
+           
+         }, 1000);
+       });
+     </script>
+  </body>
+</html>

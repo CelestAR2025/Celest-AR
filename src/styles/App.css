@@ -1,0 +1,980 @@
+/* Global Responsive Container */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px; /* Base font size for rem calculations */
+}
+
+body {
+  overflow-x: hidden;
+  width: 100%;
+}
+
+.home-container {
+  width: 100%;
+  overflow-x: hidden;
+  font-family: 'Nunito', 'Segoe UI', sans-serif;
+}
+
+/* Navigation Header */
+.nav-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  width: 100%;
+  background-color: rgba(10, 10, 32, 0.9);
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.logo {
+  color: #FFD700;
+  font-weight: bold;
+  font-size: 1.8rem;
+  text-transform: uppercase;
+}
+
+.main-nav ul {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.main-nav ul li {
+  margin-left: 1.5rem;
+}
+
+.main-nav ul li a {
+  color: white;
+  text-decoration: none;
+  transition: color 0.3s ease;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.main-nav ul li a:hover {
+  color: #FFD700;
+}
+
+/* Hero Section */
+.hero-section {
+  background-image: url('../assets/starfield-bg.jpg'); /* Add this background image */
+  background-size: cover;
+  background-position: center;
+  height: 100vh;
+  min-height: 600px; /* Ensure minimum height for small screens */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-content {
+  text-align: center;
+  padding: 2rem;
+  border-radius: 20px;
+  max-width: 800px;
+}
+
+.hero-title {
+  font-size: 6rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  text-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+  color: #FFD700;
+  text-align: center;
+}
+
+.hero-subtitle {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  color: #fff;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+}
+
+.start-button {
+  background: linear-gradient(to right, #FF4500, #FFD700);
+  color: white;
+  border: none;
+  padding: 1rem 2.5rem;
+  font-size: 1.5rem;
+  font-weight: bold;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.7);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.start-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 30px rgba(255, 215, 0, 1);
+}
+
+/* Explore Section */
+.explore-section {
+  background-color: #0A0A20;
+  background-image: radial-gradient(circle at 50% 50%, #1a1a40 0%, #0A0A20 100%);
+  min-height: 100vh; 
+  display: flex;
+  flex-direction: column;
+  color: white;
+  position: relative;
+  padding: 4rem 0;
+}
+
+.explore-content {
+  display: flex;
+  padding: 2rem;
+  flex-grow: 1;
+  flex-direction: column;
+  align-items: center;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+@media (min-width: 992px) {
+  .explore-content {
+    flex-direction: row;
+    align-items: stretch;
+    gap: 3rem;
+  }
+}
+
+@media (max-width: 991px) {
+  .explore-content {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .solar-system-model-container {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto 2rem auto;
+  }
+  
+  .explore-text {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+}
+
+.solar-system-model-container {
+  flex: 1;
+  position: relative;
+  padding: 1.5rem;
+  border: 4px dashed #FFD700;
+  border-radius: 20px;
+  margin-bottom: 2rem;
+  background: rgba(0, 0, 50, 0.3);
+  box-shadow: 0 0 30px rgba(65, 105, 225, 0.2);
+  min-height: 450px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.planet-facts-bubble {
+  position: absolute;
+  bottom: -20px;
+  right: 30px;
+  background-color: #FFD700;
+  color: #000;
+  padding: 15px 20px;
+  border-radius: 20px;
+  font-weight: bold;
+  max-width: 250px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  z-index: 5;
+  word-wrap: break-word;
+  line-height: 1.4;
+}
+
+.planet-facts-bubble p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.explore-text {
+  flex: 1;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.explore-title {
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  color: #FFD700;
+  text-align: center;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.explore-description {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 2rem;
+  border-radius: 20px;
+  border: 3px solid #4169E1;
+  box-shadow: 0 0 20px rgba(65, 105, 225, 0.5);
+}
+
+.explore-description p {
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+  font-size: 1.2rem;
+  text-align: center;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.read-more-button {
+  background-color: #4169E1;
+  color: white;
+  border: none;
+  padding: 0.7rem 1.8rem;
+  font-weight: bold;
+  border-radius: 50px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: inline-block;
+}
+
+.read-more-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+}
+
+/* Vision & Mission CSS Section */
+.vision-mission-section {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5rem 0;
+  background-color: #F9F9FF;
+  border-top: 8px solid #FFD700;
+  position: relative;
+  overflow: hidden;
+}
+
+.vision-mission-container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+.vision-mission-title {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.vision-mission-title h2 {
+  font-size: 3.5rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin: 0;
+  color: #4169E1;
+  text-shadow: 2px 2px 0 #FFD700;
+}
+
+.vision-mission-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2rem;
+  position: relative;
+  z-index: 5;
+}
+
+/* Mission Toggle Buttons */
+.mission-toggle-buttons {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 3rem;
+  gap: 1rem;
+}
+
+.mission-toggle {
+  background-color: rgba(255, 255, 255, 0.8);
+  color: #4169E1;
+  border: 2px solid #4169E1;
+  padding: 0.8rem 2.5rem;
+  border-radius: 50px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1.1rem;
+  min-width: 160px;
+}
+
+.mission-toggle.active {
+  background-color: #4169E1;
+  color: white;
+  box-shadow: 0 0 20px rgba(65, 105, 225, 0.5);
+}
+
+.mission-toggle:hover {
+  transform: scale(1.05);
+}
+
+/* Astronomer Image */
+.astronomer-image-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0 1rem;
+  position: relative;
+  flex: 1;
+  min-width: 320px;
+  text-align: center;
+}
+
+.astronomer-image {
+  height: 320px;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 15px rgba(0,0,0,0.3));
+}
+
+.speech-bubble {
+  position: absolute;
+  top: 40px;
+  right: -30px;
+  background-color: white;
+  padding: 10px 15px;
+  border-radius: 20px;
+  font-weight: bold;
+  max-width: 150px;
+  text-align: center;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  z-index: 10;
+}
+
+.speech-bubble:after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 20px;
+  border-width: 10px 10px 0;
+  border-style: solid;
+  border-color: white transparent;
+}
+
+/* Dynamic Content Section */
+.dynamic-content-section {
+  flex: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.content-card {
+  background-color: white;
+  border-radius: 20px;
+  padding: 2.5rem;
+  max-width: 600px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  position: relative;
+  overflow: hidden;
+  margin: 0 auto;
+}
+
+.content-card h3 {
+  color: #4169E1;
+  margin-bottom: 1.5rem;
+  font-size: 2rem;
+}
+
+.content-card p {
+  color: #333;
+  line-height: 1.8;
+  font-size: 1.1rem;
+  position: relative;
+  z-index: 5;
+}
+
+.planet-icon {
+  position: absolute;
+  font-size: 8rem;
+  opacity: 0.1;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+}
+
+/* Planets Decoration */
+.planets-decoration {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 2;
+}
+
+.planets-image {
+  width: 350px;
+  height: auto;
+  filter: drop-shadow(0 5px 15px rgba(0,0,0,0.2));
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .vision-mission-title h2 {
+    font-size: 3rem;
+  }
+  
+  .planets-image {
+    width: 300px;
+  }
+
+  .hero-title {
+    font-size: 5rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 1.8rem;
+  }
+  
+  .vision-mission-content {
+    gap: 1rem;
+  }
+  
+  .content-card {
+    padding: 2rem;
+  }
+  
+  .explore-title {
+    font-size: 2.2rem;
+  }
+  
+  .explore-description p {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 992px) {
+  .vision-mission-content {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .astronomer-image-container {
+    margin-bottom: 3rem;
+    width: 100%;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .planets-decoration {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 1;
+  }
+  
+  .planets-image {
+    width: 250px;
+    opacity: 0.7;
+  }
+
+  .hero-title {
+    font-size: 4rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1.5rem;
+  }
+  
+  .hero-content {
+    padding: 1.5rem;
+  }
+  
+  .explore-title {
+    font-size: 2rem;
+  }
+  
+  .explore-description p {
+    font-size: 1rem;
+  }
+  
+  .explore-content {
+    padding: 1.5rem;
+  }
+  
+  .solar-system-model-container {
+    min-height: 400px;
+    margin-bottom: 1.5rem;
+  }
+  
+  .dynamic-content-section {
+    width: 100%;
+  }
+  
+  .content-card {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 576px) {
+  .vision-mission-title h2 {
+    font-size: 2.5rem;
+  }
+  
+  .vision-mission-container {
+    padding: 0 1rem;
+  }
+  
+  .astronomer-image {
+    height: 280px;
+  }
+  
+  .planets-image {
+    width: 180px;
+  }
+
+  .hero-title {
+    font-size: 2.5rem;
+    line-height: 1.2;
+  }
+  
+  .hero-subtitle {
+    font-size: 1.2rem;
+  }
+  
+  .hero-content {
+    padding: 1rem;
+  }
+
+  .start-button {
+    font-size: 1.1rem;
+    padding: 0.8rem 1.8rem;
+  }
+  
+  .explore-title {
+    font-size: 1.8rem;
+    line-height: 1.3;
+  }
+  
+  .explore-content {
+    padding: 1rem;
+  }
+  
+  .explore-text {
+    padding: 1rem;
+    text-align: center;
+    width: 100%;
+  }
+  
+  .explore-description {
+    padding: 1.5rem;
+  }
+  
+  .explore-description p {
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+  
+  .solar-system-model-container {
+    min-height: 300px;
+    padding: 1rem;
+  }
+  
+  .planet-facts-bubble {
+    right: 50%;
+    transform: translateX(50%);
+    bottom: -25px;
+    max-width: 180px;
+    font-size: 0.8rem;
+    padding: 12px 15px;
+    left: auto;
+  }
+
+  .speech-bubble {
+    max-width: 120px;
+    font-size: 0.9rem;
+    right: 50%;
+    transform: translateX(50%);
+    top: 20px;
+  }
+  
+  .mission-toggle-buttons {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+  }
+  
+  .mission-toggle {
+    width: 80%;
+    max-width: 200px;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .mission-toggle {
+    padding: 0.6rem 1.5rem;
+    font-size: 1rem;
+  }
+
+  .content-card {
+    padding: 1.5rem;
+  }
+
+  .content-card h3 {
+    font-size: 1.8rem;
+  }
+
+  .content-card p {
+    font-size: 1rem;
+  }
+  
+  .solar-system-model-container {
+    min-height: 350px;
+  }
+  
+  .planet-facts-bubble {
+    right: 50%;
+    transform: translateX(50%);
+    bottom: -30px;
+    max-width: 200px;
+    left: auto;
+  }
+  
+  .hero-title {
+    font-size: 3.5rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 1.3rem;
+  }
+  
+  .explore-title {
+    font-size: 1.9rem;
+  }
+}
+
+/* Extra small devices (phones, 480px and down) */
+@media (max-width: 480px) {
+  .hero-section {
+    min-height: 500px;
+    height: 100vh;
+  }
+  
+  .hero-title {
+    font-size: 2.2rem;
+    line-height: 1.1;
+    margin-bottom: 0.8rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.4;
+  }
+  
+  .hero-content {
+    padding: 0.8rem;
+    max-width: 90%;
+  }
+  
+  .start-button {
+    font-size: 1rem;
+    padding: 0.7rem 1.5rem;
+    white-space: nowrap;
+  }
+  
+  .explore-title {
+    font-size: 1.6rem;
+    margin-bottom: 1rem;
+  }
+  
+  .explore-content {
+    padding: 0.8rem;
+  }
+  
+  .explore-text {
+    padding: 0.8rem;
+    text-align: center;
+    width: 100%;
+  }
+  
+  .explore-description {
+    padding: 1.2rem;
+  }
+  
+  .explore-description p {
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+  }
+  
+  .read-more-button {
+    font-size: 1rem;
+    padding: 0.6rem 1.5rem;
+  }
+  
+  .solar-system-model-container {
+    min-height: 280px;
+    padding: 0.8rem;
+  }
+  
+  .planet-facts-bubble {
+    right: 2px;
+    max-width: 160px;
+    font-size: 0.75rem;
+    padding: 10px 12px;
+  }
+  
+  .vision-mission-title h2 {
+    font-size: 2rem;
+  }
+  
+  .vision-mission-section {
+    padding: 3rem 0;
+  }
+  
+  .content-card {
+    padding: 1.2rem;
+  }
+  
+  .content-card h3 {
+    font-size: 1.6rem;
+  }
+  
+  .content-card p {
+    font-size: 0.9rem;
+  }
+  
+  .astronomer-image {
+    height: 250px;
+  }
+}
+
+/* Ultra small devices (phones, 360px and down) */
+@media (max-width: 360px) {
+  .hero-title {
+    font-size: 2rem;
+    line-height: 1.1;
+  }
+  
+  .hero-subtitle {
+    font-size: 1rem;
+  }
+  
+  .hero-content {
+    max-width: 95%;
+    padding: 0.6rem;
+  }
+  
+  .start-button {
+    font-size: 0.9rem;
+    padding: 0.6rem 1.3rem;
+  }
+  
+  .explore-title {
+    font-size: 1.4rem;
+  }
+  
+  .explore-description {
+    padding: 1rem;
+  }
+  
+  .explore-description p {
+    font-size: 0.85rem;
+  }
+  
+  .solar-system-model-container {
+    min-height: 250px;
+    padding: 0.6rem;
+  }
+  
+  .planet-facts-bubble {
+    right: 50%;
+    transform: translateX(50%);
+    bottom: -20px;
+    max-width: 140px;
+    font-size: 0.7rem;
+    padding: 8px 10px;
+    left: auto;
+    text-align: center;
+  }
+  
+  .vision-mission-title h2 {
+    font-size: 1.8rem;
+  }
+  
+  .content-card {
+    padding: 1rem;
+  }
+  
+  .content-card h3 {
+    font-size: 1.4rem;
+  }
+  
+  .content-card p {
+    font-size: 0.85rem;
+  }
+}
+
+/* Enhanced Mobile Responsiveness */
+@media (max-width: 768px) {
+  /* Mobile Navigation */
+  .nav-header {
+    padding: 0.8rem 1rem;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .main-nav ul {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  
+  .main-nav ul li {
+    margin: 0.25rem;
+  }
+  
+  .main-nav ul li a {
+    font-size: 0.9rem;
+  }
+  
+  /* Hero Section Mobile */
+  .hero-title {
+    font-size: 3rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 1.2rem;
+  }
+  
+  /* Explore Section Mobile */
+  .explore-content {
+    flex-direction: column;
+    padding: 1rem;
+  }
+  
+  .solar-system-model-container {
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  model-viewer {
+    height: 300px !important;
+  }
+  
+  /* Vision Mission Mobile */
+  .vision-mission-content {
+    flex-direction: column;
+  }
+  
+  .content-card {
+    width: 100%;
+  }
+}
+
+/* Tablet Responsiveness */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .hero-title {
+    font-size: 4rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 1.5rem;
+  }
+  
+  .explore-content {
+    padding: 2rem;
+  }
+  
+  .vision-mission-content {
+    gap: 1.5rem;
+  }
+}
+
+/* Large Desktop */
+@media (min-width: 1440px) {
+  .home-container {
+    max-width: 1440px;
+    margin: 0 auto;
+  }
+  
+  .hero-title {
+    font-size: 7rem;
+  }
+  
+  .explore-content {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+}
+
+/* Touch Device Optimizations */
+@media (pointer: coarse) {
+  button, a {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  .start-button {
+    padding: 1rem 2rem;
+  }
+}
+
+/* Landscape Mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+  .hero-section {
+    min-height: 100vh;
+  }
+  
+  .hero-title {
+    font-size: 2.5rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 1rem;
+  }
+  
+  .astronomer-image {
+    height: 220px;
+  }
+  
+  .mission-toggle {
+    font-size: 0.9rem;
+    padding: 0.5rem 1.2rem;
+  }
+}

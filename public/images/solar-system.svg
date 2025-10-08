@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="400" height="400" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Saturn (center) -->
+    <g transform="translate(200 200)">
+        <!-- Saturn's rings -->
+        <ellipse rx="100" ry="20" fill="url(#ringGradient)" transform="rotate(-15)"/>
+        <ellipse rx="90" ry="18" fill="#FFA07A" fill-opacity="0.6" transform="rotate(-15)"/>
+        <ellipse rx="80" ry="16" fill="#FFD700" fill-opacity="0.4" transform="rotate(-15)"/>
+        
+        <!-- Saturn's body -->
+        <circle r="40" fill="#FFB347"/>
+        <circle r="40" fill="url(#saturnGlow)" fill-opacity="0.5"/>
+    </g>
+    
+    <!-- Orbiting planets -->
+    <circle cx="80" cy="120" r="20" fill="#FF6B6B"/>
+    <circle cx="320" cy="180" r="25" fill="#4ECDC4"/>
+    <circle cx="200" cy="60" r="15" fill="#A06CD5"/>
+    <circle cx="140" cy="300" r="30" fill="#7CB518"/>
+    <circle cx="280" cy="280" r="22" fill="#45B7D1"/>
+    
+    <!-- Small planets/moons -->
+    <circle cx="100" cy="200" r="8" fill="#FFE66D"/>
+    <circle cx="300" cy="150" r="10" fill="#FF4365"/>
+    <circle cx="180" cy="320" r="12" fill="#FF7F51"/>
+    <circle cx="250" cy="100" r="6" fill="#98CE00"/>
+    
+    <!-- Glowing effects -->
+    <defs>
+        <radialGradient id="saturnGlow" cx="0.5" cy="0.5" r="0.5" fx="0.5" fy="0.5">
+            <stop offset="0%" stop-color="white" stop-opacity="0.3"/>
+            <stop offset="100%" stop-color="white" stop-opacity="0"/>
+        </radialGradient>
+        <linearGradient id="ringGradient" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#FFD700" stop-opacity="0.8"/>
+            <stop offset="50%" stop-color="#FFA07A" stop-opacity="0.6"/>
+            <stop offset="100%" stop-color="#FFD700" stop-opacity="0.8"/>
+        </linearGradient>
+    </defs>
+    
+    <!-- Stars -->
+    <g fill="white">
+        <circle cx="40" cy="40" r="1"/>
+        <circle cx="360" cy="40" r="1"/>
+        <circle cx="40" cy="360" r="1"/>
+        <circle cx="360" cy="360" r="1"/>
+        <circle cx="120" cy="40" r="1"/>
+        <circle cx="280" cy="40" r="1"/>
+        <circle cx="120" cy="360" r="1"/>
+        <circle cx="280" cy="360" r="1"/>
+        <circle cx="200" cy="40" r="1"/>
+        <circle cx="200" cy="360" r="1"/>
+    </g>
+</svg> 

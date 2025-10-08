@@ -1,0 +1,55 @@
+import React, { useEffect, useRef, useState } from 'react';
+import '../../CELESTAR-AR_SCENES/constellation-styles.css';
+
+const ARScene = () => {
+  const sceneRef = useRef(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const componentsInitialized = useRef(false);
+
+  useEffect(() => {
+    // Load A-Frame and AR.js scripts dynamically
+    const loadScripts = () => {
+      return new Promise((resolve, reject) => {
+        // Check if scripts are already loaded
+        if (window.AFRAME && window.THREEx) {
+          resolve();
+          return;
+        }
+
+        // Load A-Frame first
+        const aframeScript = document.createElement('script');
+        aframeScript.src = 'https://aframe.io/releases/1.4.2/aframe.min.js';
+        aframeScript.async = false;
+        
+        aframeScript.onload = () => {
+          console.log('A-Frame loaded successfully');
+          
+          // Then load AR.js
+          const arjsScript = document.createElement('script');
+          arjsScript.src = 'https://cdn.rawgit.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js';
+          arjsScript.async = false;
+          
+          arjsScript.onload = () => {
+            console.log('AR.js loaded successfully');
+            resolve();
+          };
+          
+          arjsScript.onerror = () => {
+            console.error('Failed to load AR.js library');
+            reject(new Error('AR.js failed to load'));
+          };
+          
+          document.head.appendChild(arjsScript);
+        };
+        
+        aframeScript.onerror = () => {
+          console.error('Failed to load A-Frame library');
+          reject(new Error('A-Frame failed to load'));
+        };
+        
+        document.head.appendChild(aframeScript);
+      });
+    };
+
+    // Wait for A-Frame to be ready
+    const initializeApp = () => {

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Earth AR Test</title>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.rawgit.com/jeromeetienne/AR.js/2.2.1/aframe/build/aframe-ar.js"></script>
+    <script src="https://unpkg.com/aframe-super-hands-component@4.0.5/dist/aframe-super-hands.min.js"></script>
+    <script>
+      AFRAME.registerComponent('earth-interaction', {
+        schema: {},
+        init: function () {
+          const el = this.el;
+          let lastX, lastY, isDragging = false;
+          let currentRotation = {x: 0, y: 0};
+          let currentScale = 1;
+
+          // Mouse drag to rotate
+          el.sceneEl.canvas.addEventListener('mousedown', function (e) {
+            isDragging = true;
+            lastX = e.clientX;
+            lastY = e.clientY;
+          });
+          window.addEventListener('mousemove', function (e) {
+            if (!isDragging) return;
+            let dx = e.clientX - lastX;
+            let dy = e.clientY - lastY;
+            currentRotation.y += dx * 0.5;
+            currentRotation.x -= dy * 0.5;
+            el.setAttribute('rotation', `${currentRotation.x} ${currentRotation.y} 0`);
+            lastX = e.clientX;
+            lastY = e.clientY;
+          });
+          window.addEventListener('mouseup', function () {
+            isDragging = false;
+          });
+
+          // Mouse wheel to zoom
+          el.sceneEl.canvas.addEventListener('wheel', function (e) {
+            e.preventDefault();
+            currentScale += e.deltaY < 0 ? 0.1 : -0.1;
+            currentScale = Math.max(0.2, Math.min(2, currentScale));
+            el.setAttribute('scale', `${currentScale} ${currentScale} ${currentScale}`);
+          });
+
+          // Touch pinch to zoom and drag to rotate
+          let startDist = null, startScale = null, startRot = null;
+          el.sceneEl.canvas.addEventListener('touchstart', function (e) {
+            if (e.touches.length === 2) {
+              startDist = Math.hypot(
+                e.touches[0].clientX - e.touches[1].clientX,
+                e.touches[0].clientY - e.touches[1].clientY
+              );
+              startScale = currentScale;
+            } else if (e.touches.length === 1) {
+              isDragging = true;
+              lastX = e.touches[0].clientX;
+              lastY = e.touches[0].clientY;
+              startRot = {...currentRotation};
+            }
+          });
+          el.sceneEl.canvas.addEventListener('touchmove', function (e) {
+            if (e.touches.length === 2 && startDist !== null) {
+              let newDist = Math.hypot(
+                e.touches[0].clientX - e.touches[1].clientX,
+                e.touches[0].clientY - e.touches[1].clientY
+              );
+              let scaleChange = newDist / startDist;
+              currentScale = Math.max(0.2, Math.min(2, startScale * scaleChange));
+              el.setAttribute('scale', `${currentScale} ${currentScale} ${currentScale}`);
+            } else if (e.touches.length === 1 && isDragging) {
+              let dx = e.touches[0].clientX - lastX;
+              let dy = e.touches[0].clientY - lastY;
+              currentRotation.y = startRot.y + dx * 0.5;
+              currentRotation.x = startRot.x - dy * 0.5;
+              el.setAttribute('rotation', `${currentRotation.x} ${currentRotation.y} 0`);
+            }
+          });
+          el.sceneEl.canvas.addEventListener('touchend', function (e) {
+            if (e.touches.length < 2) startDist = null;
+            if (e.touches.length === 0) isDragging = false;
+          });
+        }
+      });
+
+      // New component: toggles an inner core sphere and label when the Earth is clicked/tapped
+      AFRAME.registerComponent('earth-core-toggle', {
+        init: function () {
+          const markerEl = this.el; // attach this component to the <a-marker>
+          const sceneEl = markerEl.sceneEl;
+
+          const trySetup = () => {
+            const canvas = sceneEl.canvas;
+            if (!canvas) return setTimeout(trySetup, 100);
+
+            const earthEl = markerEl.querySelector('#earth-sphere');
+            const coreEl = markerEl.querySelector('#earth-core');
+            const labelEl = markerEl.querySelector('#core-label');
+            if (!earthEl || !coreEl || !labelEl) return;
+
+            const raycaster = new THREE.Raycaster();
+            const mouse = new THREE.Vector2();
+
+            function getPointerEventClient(e) {
+              if (e.touches && e.touches.length) return e.touches[0];
+              return e;
+            }
+
+            function onPointer(e) {
+              const ev = getPointerEventClient(e);
+              const rect = canvas.getBoundingClientRect();
+              mouse.x = ((ev.clientX - rect.left) / rect.width) * 2 - 1;
+              mouse.y = -((ev.clientY - rect.top) / rect.height) * 2 + 1;
+
+              raycaster.setFromCamera(mouse, sceneEl.camera);
+              const intersects = raycaster.intersectObject(earthEl.object3D, true);
+              if (intersects.length > 0) {
+                // toggle core visibility
+                const visible = coreEl.getAttribute('visible');
+                coreEl.setAttribute('visible', !visible);
+                labelEl.setAttribute('visible', !visible);
+
+                // if showing core, stop automatic rotation for clearer view
+                if (!visible) {
+                  if (earthEl.components && earthEl.components.animation) {
+                    try { earthEl.components.animation.pause(); } catch (err) {}
+                  }
+                } else {
+                  // resume rotation (re-apply animation)
+                  earthEl.setAttribute('animation', 'property: rotation; to: 0 360 0; loop: true; dur: 10000; easing: linear');
+                }
+
+                e.preventDefault && e.preventDefault();
+                e.stopPropagation && e.stopPropagation();
+                return;
+              }
+            }
+
+            canvas.addEventListener('mousedown', onPointer);
+            canvas.addEventListener('touchstart', onPointer);
+          };
+
+          trySetup();
+        }
+      });
+    </script>
+  </head>
+  <body style="margin: 0; overflow: hidden;">
+    <a-scene
+      embedded
+      arjs="sourceType: webcam; debugUIEnabled: false;"
+      renderer="logarithmicDepthBuffer: true;"
+    >
+      <!-- Camera -->
+      <a-entity camera></a-entity>
+
+      <!-- Marker for Earth -->
+      <a-marker type="pattern" url="markers/earth.patt" earth-core-toggle>
+        <!-- Earth Group: outer sphere + hidden core + label -->
+        <a-entity id="earthGroup">
+          <a-sphere
+            id="earth-sphere"
+            position="0 0 0"
+            radius="0.5"
+            segments-width="32"
+            segments-height="32"
+            src="texture/earth.jpg"
+            rotation="0 0 0"
+            animation="property: rotation; to: 0 360 0; loop: true; dur: 10000; easing: linear"
+            earth-interaction
+          ></a-sphere>
+
+          <!-- Inner core (hidden by default) -->
+          <a-sphere
+            id="earth-core"
+            position="0 0 0"
+            radius="0.18"
+            material="color: #ff6f61; opacity: 0.95; metalness: 0.6; roughness: 0.4"
+            visible="false"
+          ></a-sphere>
+
+          <!-- Label that appears when core is visible -->
+          <a-entity id="core-label"
+                    visible="false"
+                    position="0 -0.9 0"
+                    text="value: Earth's core: Mostly iron & nickel. Radius ≈ 1,220 km.; width: 2; color: #ffffff; align: center"
+                    scale="1.5 1.5 1.5"
+          ></a-entity>
+        </a-entity>
+      </a-marker>
+    </a-scene>
+  </body>
+</html>

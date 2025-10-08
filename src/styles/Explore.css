@@ -1,0 +1,871 @@
+/* explore.css - Kid-friendly space explorer styles */
+
+/* Basic reset and global styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Comic Sans MS', 'Chalkboard SE', 'Bubblegum Sans', sans-serif;
+  overflow-x: hidden;
+  background-color: #000;
+}
+
+/* Enhanced background animations */
+@keyframes twinkle {
+  0%, 100% { 
+    opacity: 0.3; 
+    transform: scale(1); 
+  }
+  50% { 
+    opacity: 1; 
+    transform: scale(1.5); 
+    filter: blur(1px);
+  }
+}
+
+@keyframes float {
+  0%, 100% { 
+    transform: translateY(0px) rotate(0deg); 
+  }
+  50% { 
+    transform: translateY(-20px) rotate(5deg); 
+  }
+}
+
+@keyframes rocket-trail {
+  0% { 
+    transform: scale(0.8) rotate(0deg); 
+    opacity: 0.7; 
+  }
+  50% { 
+    transform: scale(1.2) rotate(5deg); 
+    opacity: 1; 
+  }
+  100% { 
+    transform: scale(0.8) rotate(0deg); 
+    opacity: 0.7; 
+  }
+}
+
+@keyframes orbit {
+  0% {
+    transform: rotate(0deg) translateX(120px) rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg) translateX(120px) rotate(-360deg);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 10px 2px rgba(255, 255, 0, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 20px 8px rgba(255, 255, 0, 0.9);
+  }
+}
+
+/* Celestial container shared with Games.jsx */
+.celestial-container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: 90vh;
+  padding: 20px;
+  font-family: 'Nunito', sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Enhanced star background effects */
+.stars-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('/stars-bg.jpg');
+  background-size: cover;
+  z-index: -2;
+  animation: twinkle 8s infinite alternate;
+}
+
+.star-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse at center, rgba(20, 20, 50, 0.2) 0%, rgba(0, 0, 30, 0.8) 100%);
+  z-index: -1;
+}
+
+/* Animated planets */
+.floating-planet {
+  position: absolute;
+  z-index: -1;
+  border-radius: 50%;
+}
+
+.planet1 {
+  width: 120px;
+  height: 120px;
+  background: linear-gradient(45deg, #ffb347, #ffcc33);
+  box-shadow: 0 0 20px rgba(255, 204, 51, 0.6);
+  top: 15%;
+  left: 5%;
+  animation: float 15s infinite ease-in-out;
+}
+
+.planet2 {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(45deg, #3498db, #2980b9);
+  box-shadow: 0 0 15px rgba(52, 152, 219, 0.6);
+  top: 70%;
+  right: 10%;
+  animation: float 12s infinite ease-in-out reverse;
+}
+
+.planet3 {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(45deg, #e74c3c, #c0392b);
+  box-shadow: 0 0 10px rgba(231, 76, 60, 0.6);
+  bottom: 15%;
+  left: 8%;
+  animation: float 18s infinite ease-in-out 2s;
+}
+
+/* Shooting stars */
+.shooting-star {
+  position: absolute;
+  width: 100px;
+  height: 2px;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.8) 50%, rgba(255, 255, 255, 0));
+  z-index: -1;
+}
+
+.star1 {
+  top: 20%;
+  left: -100px;
+  transform: rotate(15deg);
+  animation: shoot 8s infinite linear;
+  animation-delay: 2s;
+}
+
+.star2 {
+  top: 60%;
+  left: -100px;
+  transform: rotate(-10deg);
+  animation: shoot 10s infinite linear;
+  animation-delay: 5s;
+}
+
+@keyframes shoot {
+  0% { transform: translateX(0) rotate(15deg); opacity: 0; }
+  5% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateX(calc(100vw + 200px)) rotate(15deg); opacity: 0; }
+}
+
+/* Main content styles */
+.content-container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.title {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2rem;
+  text-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
+  color: #ffffff;
+  background: linear-gradient(45deg, #ff8a00, #e52e71, #2193b0);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: rainbow 6s ease infinite;
+  font-weight: 800;
+}
+
+.subtitle {
+  font-size: 1.5rem;
+  margin-bottom: 3rem;
+  color: #ffdd57;
+  text-shadow: 0 0 10px rgba(255, 221, 87, 0.6);
+}
+
+@keyframes rainbow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Card container styles */
+.cards-container {
+  display: flex;
+  justify-content: space-evenly;
+  flex-wrap: nowrap;
+  gap: 1rem;
+  margin-bottom: 3rem;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto 3rem auto;
+  padding: 0 2rem;
+}
+
+/* Game card styles */
+.game-card {
+  flex: 1;
+  max-width: 280px;
+  min-width: 220px;
+  height: 400px;
+  border-radius: 20px;
+  overflow: hidden;
+  background-color: rgba(20, 20, 50, 0.7);
+  box-shadow: 0 8px 25px rgba(255, 255, 255, 0.15);
+  cursor: pointer;
+  transition: transform 0.4s, box-shadow 0.4s;
+  position: relative;
+  border: 3px solid transparent;
+}
+
+.game-card-link {
+  text-decoration: none;
+  display: block;
+}
+
+.game-card:hover {
+  transform: translateY(-15px) scale(1.02);
+  box-shadow: 0 15px 35px rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.card-image-container {
+  height: 70%;
+  position: relative;
+  border-radius: 16px 16px 0 0;
+  overflow: hidden;
+  background-color: #1a1a2e;
+}
+
+/* Card gradients */
+.planet-quiz-bg, .card-gradient-1 {
+  background: linear-gradient(135deg, #4158D0, #C850C0, #FFCC70);
+  background-size: 200% 200%;
+  animation: gradientMove 5s ease infinite;
+}
+
+.connect-stars-bg, .card-gradient-2 {
+  background: linear-gradient(135deg, #0093E9, #80D0C7, #FF6B6B);
+  background-size: 200% 200%;
+  animation: gradientMove 5s ease infinite;
+}
+
+.sun-moon-bg {
+  background: linear-gradient(135deg, #FFD700, #FFA500, #87CEEB);
+  background-size: 200% 200%;
+  animation: gradientMove 5s ease infinite;
+}
+
+.constellation-bg {
+  background: linear-gradient(135deg, #8B4513, #4B0082, #191970, #000080);
+  background-size: 200% 200%;
+  animation: gradientMove 6s ease infinite;
+}
+
+.planet-matching-bg {
+  background-color: #1a1a2e;
+}
+
+/* Gradient overlays */
+.planet-quiz-gradient, .connect-stars-gradient, .planet-matching-gradient, .sun-moon-gradient, .constellation-gradient {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(26, 26, 46, 0.7);
+}
+
+.inner-image-container {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.inner-image {
+  width: 90%;
+  height: 90%;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  transform: scale(1);
+  transition: transform 0.3s ease-in-out;
+}
+
+.game-card:hover .inner-image {
+  transform: scale(1.1);
+}
+
+/* Badge styles */
+.difficulty-badge {
+  position: absolute;
+  padding: 5px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  z-index: 2;
+  top: 10px;
+  left: 10px;
+}
+
+.beginner {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.intermediate {
+  background-color: #FFC107;
+  color: black;
+}
+
+.advanced {
+  background-color: #F44336;
+  color: white;
+}
+
+.card-title-container {
+  height: 30%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 15px;
+  background-color: rgba(0, 0, 30, 0.8);
+  transition: background-color 0.3s;
+}
+
+.game-card:hover .card-title-container {
+  background-color: rgba(30, 30, 60, 0.9);
+}
+
+.card-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 8px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.card-description {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+  line-height: 1.4;
+}
+
+/* Rocket animation */
+.rocket-animation {
+  position: relative;
+  height: 150px;
+  margin-top: 3rem;
+}
+
+.rocket {
+  position: absolute;
+  width: 60px;
+  height: 120px;
+  background-image: url('/images/rocket.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  left: 50%;
+  transform: translateX(-50%);
+  animation: rocketFloat 3s infinite ease-in-out;
+  z-index: 2;
+}
+
+.rocket-trail {
+  position: absolute;
+  width: 40px;
+  height: 80px;
+  background: linear-gradient(to top, rgba(255, 69, 0, 0.8), rgba(255, 165, 0, 0.4), transparent);
+  left: 50%;
+  transform: translateX(-50%) translateY(60px);
+  border-radius: 50%;
+  filter: blur(5px);
+  animation: rocketTrail 0.5s infinite alternate;
+  z-index: 1;
+}
+
+@keyframes rocketFloat {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(-15px); }
+}
+
+@keyframes rocketTrail {
+  0% { height: 70px; opacity: 0.7; }
+  100% { height: 90px; opacity: 0.9; }
+}
+
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Planet image animations */
+.planet-image {
+  transition: transform 0.8s ease;
+}
+
+.space-card:hover .planet-image, .game-card:hover .planet-image {
+  transform: rotate(360deg) scale(1.1);
+}
+
+/* Sun and Moon icons */
+.sun-moon-icons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  width: 100%;
+  height: 100%;
+}
+
+.sun-icon, .moon-icon {
+  font-size: 3rem;
+  animation: float 3s ease-in-out infinite;
+  transition: transform 0.3s ease;
+}
+
+.sun-icon {
+  animation-delay: 0s;
+}
+
+.moon-icon {
+  animation-delay: 1.5s;
+}
+
+.game-card:hover .sun-icon {
+  transform: rotate(180deg) scale(1.2);
+}
+
+.game-card:hover .moon-icon {
+  transform: rotate(-180deg) scale(1.2);
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Hover text animations */
+.hover-text {
+  transform: translateY(20px);
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.hover-text.opacity-100 {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Rocket emoji animation */
+.rocket-emoji {
+  display: inline-block;
+  transform: rotate(45deg);
+  animation: rocketWobble 2s ease-in-out infinite;
+}
+
+@keyframes rocketWobble {
+  0%, 100% { transform: rotate(45deg) translateY(0); }
+  50% { transform: rotate(50deg) translateY(-5px); }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 1400px) {
+  .cards-container {
+    max-width: 1200px;
+    gap: 0.8rem;
+  }
+  
+  .game-card {
+    max-width: 260px;
+    min-width: 200px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .cards-container {
+    max-width: 1000px;
+    gap: 0.6rem;
+    padding: 0 1.5rem;
+  }
+  
+  .game-card {
+    max-width: 240px;
+    min-width: 180px;
+    height: 380px;
+  }
+}
+
+@media (max-width: 992px) {
+  .cards-container {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.5rem;
+  }
+  
+  .game-card {
+    flex: none;
+    width: 280px;
+    height: 400px;
+  }
+}
+
+@media (max-width: 768px) {
+  .title {
+    font-size: 2.5rem;
+  }
+  
+  .subtitle {
+    font-size: 1.2rem;
+  }
+  
+  .cards-container {
+    gap: 1rem;
+    padding: 0 1rem;
+  }
+  
+  .game-card {
+    width: 90%;
+    max-width: 300px;
+    height: 350px;
+  }
+  
+  .floating-planet {
+    display: none;
+  }
+}
+
+/* Accessibility improvements */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Focus state */
+button:focus, a:focus, div[role="button"]:focus {
+  outline: 3px solid #f0f;
+  outline-offset: 3px;
+}
+
+/* Custom asteroid cursor */
+.asteroid-cursor {
+  pointer-events: none;
+  position: fixed;
+  width: 30px;
+  height: 30px;
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23888888"><path d="M12 2.5s4.5 2.04 4.5 10.5c0 2.49-1.04 5.57-1.6 7H9.1c-.56-1.43-1.6-4.51-1.6-7C7.5 4.54 12 2.5 12 2.5z"/></svg>');
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: transform 0.1s;
+}
+
+/* Planet glow effects */
+.planet-glow-red {
+  box-shadow: 0 0 15px 5px rgba(255, 0, 0, 0.5);
+}
+
+.planet-glow-blue {
+  box-shadow: 0 0 15px 5px rgba(0, 0, 255, 0.5);
+}
+
+.planet-glow-green {
+  box-shadow: 0 0 15px 5px rgba(0, 255, 0, 0.5);
+}
+
+/* Animated background gradient */
+.space-gradient {
+  background: linear-gradient(-45deg, #000235, #12005e, #1c0035, #2d0a31);
+  background-size: 400% 400%;
+  animation: gradient 15s ease infinite;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Card gradients */
+.card-gradient-1 {
+  background: linear-gradient(135deg, #4158D0, #C850C0, #FFCC70);
+  background-size: 200% 200%;
+  animation: gradientMove 5s ease infinite;
+}
+
+.card-gradient-2 {
+  background: linear-gradient(135deg, #0093E9, #80D0C7, #FF6B6B);
+  background-size: 200% 200%;
+  animation: gradientMove 5s ease infinite;
+}
+
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Planet image animations */
+.planet-image {
+  transition: transform 0.8s ease;
+}
+
+.space-card:hover .planet-image {
+  transform: rotate(360deg) scale(1.1);
+}
+
+/* Hover text animations */
+.hover-text {
+  transform: translateY(20px);
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.hover-text.opacity-100 {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Rocket emoji animation */
+.rocket-emoji {
+  display: inline-block;
+  transform: rotate(45deg);
+  animation: rocketWobble 2s ease-in-out infinite;
+}
+
+@keyframes rocketWobble {
+  0%, 100% { transform: rotate(45deg) translateY(0); }
+  50% { transform: rotate(50deg) translateY(-5px); }
+}
+
+/* Animation for rocket */
+.rocket {
+  display: inline-block;
+  transform-origin: center;
+  animation: rocket-wobble 2s infinite;
+}
+
+@keyframes rocket-wobble {
+  0%, 100% { transform: rotate(45deg); }
+  50% { transform: rotate(55deg); }
+}
+
+.space-card:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(255, 255, 100, 0.5);
+}
+
+/* Enhanced hover states */
+.space-card:hover img {
+  filter: brightness(1.2);
+}
+
+.space-card:active {
+  transform: scale(0.98);
+}
+
+/* Constellation icons */
+.constellation-icons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 8px;
+}
+
+.star-pattern {
+  font-size: 18px;
+  color: #fff;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+  animation: twinkle 2s ease-in-out infinite;
+  animation-delay: calc(var(--i, 0) * 0.3s);
+}
+
+.star-pattern:nth-child(1) { --i: 0; }
+.star-pattern:nth-child(2) { --i: 1; }
+.star-pattern:nth-child(3) { --i: 2; }
+
+/* Responsive Design for Mobile and Tablets */
+@media (max-width: 1200px) {
+  .explore-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+  }
+}
+
+@media (max-width: 992px) {
+  .explore-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    padding: 0 20px;
+  }
+  
+  .explore-title {
+    font-size: 3.5rem;
+  }
+  
+  .explore-subtitle {
+    font-size: 1.3rem;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Mobile Layout */
+  .explore-container {
+    padding: 10px;
+  }
+  
+  .explore-header {
+    padding: 20px 10px;
+  }
+  
+  .explore-title {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+  }
+  
+  .explore-subtitle {
+    font-size: 1.1rem;
+  }
+  
+  .explore-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+    padding: 0 15px;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+  
+  .space-card {
+    min-height: 200px;
+  }
+  
+  .card-content h3 {
+    font-size: 1.3rem;
+  }
+  
+  .card-content p {
+    font-size: 0.9rem;
+  }
+  
+  .rocket-icon {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Small Mobile */
+  .explore-title {
+    font-size: 2rem;
+  }
+  
+  .explore-subtitle {
+    font-size: 1rem;
+  }
+  
+  .space-card {
+    min-height: 180px;
+  }
+  
+  .card-content h3 {
+    font-size: 1.2rem;
+  }
+  
+  .card-content p {
+    font-size: 0.85rem;
+    padding: 0 10px;
+  }
+}
+
+/* Touch Device Optimizations */
+@media (pointer: coarse) {
+  .space-card {
+    min-height: 220px;
+  }
+  
+  .card-content {
+    padding: 20px;
+  }
+}
+
+/* Landscape Mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+  .explore-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+  
+  .explore-header {
+    padding: 15px 10px;
+  }
+  
+  .explore-title {
+    font-size: 2rem;
+  }
+  
+  .space-card {
+    min-height: 160px;
+  }
+}
+
+/* Large Desktop */
+@media (min-width: 1440px) {
+  .explore-container {
+    max-width: 1440px;
+    margin: 0 auto;
+  }
+  
+  .explore-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+}

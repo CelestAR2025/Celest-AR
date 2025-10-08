@@ -1,0 +1,720 @@
+/* Main Container */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-image: url('https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=2071');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    color: white;
+  }
+/* Main Container */
+.planets-container-xx {
+    text-align: center;
+    padding: 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-size: cover;
+    font-family: 'Comic Sans MS', 'Bubblegum Sans', cursive;
+}
+
+/* Header with Icons */
+.planets-header-xx {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 30px;
+    margin-top: 30px;
+}
+
+.rocket-icon-xx, .astronaut-icon-xx {
+    width: 70px;
+    height: 70px;
+    margin: 0 20px;
+}
+
+/* Title */
+.planets-title-xx {
+    font-size: 64px;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 
+        0 0 10px #ff9900,
+        0 0 20px #ff6600;
+    margin: 0;
+    letter-spacing: 2px;
+}
+
+/* Search Container */
+.search-container-xx {
+    width: 100%;
+    max-width: 600px;
+    margin-bottom: 40px;
+}
+
+/* Search Bar */
+.search-bar-xx {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 8px 16px;
+    border-radius: 50px;
+    border: 4px solid #ff9900;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.search-bar-xx input {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    outline: none;
+    font-size: 18px;
+    background: transparent;
+    color: #333;
+    font-family: 'Comic Sans MS', 'Bubblegum Sans', cursive;
+}
+
+.search-bar-xx input::placeholder {
+    color: #888;
+}
+
+.ar-disabled-xx {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+
+.search-bar-xx button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.search-icon-xx {
+    width: 28px;
+    height: 28px;
+}
+
+/* Planets Grid */
+.planets-grid-xx {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px;
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+/* Planet Card */
+.planet-card-xx {
+    border-radius: 20px;
+    overflow: hidden;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    aspect-ratio: 1/1.2;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 5px solid #fff;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+.planet-card-xx:hover {
+    transform: scale(1.05) translateY(-10px);
+    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.4);
+}
+
+/* Planet Model Container */
+.planet-model-container-xx {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background: transparent;
+}
+
+/* Model Viewer */
+model-viewer {
+    width: 100%;
+    height: 100%;
+    --poster-color: transparent;
+    --progress-mask: transparent;
+    background-color: transparent !important;
+}
+
+/* Planet Name Banner */
+.planet-name-banner-xx {
+    width: 100%;
+    padding: 12px 0;
+    background-color: #ff9900;
+}
+
+.planet-name-xx {
+    font-size: 28px;
+    font-weight: bold;
+    margin: 0;
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Planet Detail View */
+.planet-detail-container-xx {
+    min-height: 100vh;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    font-family: 'Comic Sans MS', 'Bubblegum Sans', cursive;
+    padding-top: 20px;
+}
+
+.back-button-xx {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    padding: 10px 20px;
+    border-radius: 30px;
+    background-color: #ff9900;
+    border: 3px solid white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s ease;
+}
+
+.back-button-xx:hover {
+    transform: scale(1.05);
+}
+
+.back-button-xx span {
+    margin-left: 8px;
+}
+
+.back-icon-xx {
+    width: 20px;
+    height: 20px;
+}
+
+.planet-detail-content-xx {
+    display: flex;
+    min-height: 90vh;
+    padding: 80px 20px 20px 20px;
+}
+
+.planet-detail-model-xx {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.planet-detail-model-xx model-viewer {
+    width: 100%;
+    height: 70vh;
+    --poster-color: transparent;
+    --progress-bar-color: #FFD700;
+    --progress-mask: transparent;
+}
+
+.ar-button-xx {
+    position: absolute;
+    bottom: 30px;
+    left: 30px;
+    padding: 10px 20px;
+    border-radius: 30px;
+    background-color: #ff6600;
+    color: white;
+    border: 3px solid white;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    z-index: 5;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.ar-button-xx:hover {
+    transform: scale(1.05);
+    background-color: #ff9900;
+}
+
+.ar-button-xx img {
+    width: 24px;
+    height: 24px;
+    margin-right: 8px;
+}
+
+.ar-active-xx {
+    background-color: #cc0000;
+}
+
+.planet-detail-info-xx {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    border-radius: 20px;
+    overflow: hidden;
+    margin: 0 20px;
+    background-color: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    border: 5px solid;
+}
+
+.planet-detail-header-xx {
+    padding: 20px;
+    text-align: center;
+}
+
+.planet-detail-title-xx {
+    font-size: 48px;
+    font-weight: bold;
+    margin: 0 0 5px 0;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.planet-detail-subtitle-xx {
+    font-size: 24px;
+    color: white;
+    margin: 0;
+    opacity: 0.9;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.planet-detail-body-xx {
+    padding: 30px;
+    position: relative;
+    flex: 1;
+    display: flex;
+    background-color: white;
+}
+
+.planet-detail-description-xx {
+    font-size: 28px;
+    line-height: 1.8;
+    color: #333;
+    font-weight: 500;
+    margin-bottom: 60px;
+}
+
+.play-button-xx {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    border-radius: 30px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s ease, background-color 0.2s ease;
+    border: 3px solid #2E7D32;
+}
+
+.play-button-xx:hover {
+    transform: scale(1.05);
+}
+
+.play-button-xx img {
+    width: 24px;
+    height: 24px;
+    margin-right: 8px;
+}
+
+.play-button-xx.speaking-xx {
+    background-color: #F44336;
+    border-color: #C62828;
+}
+
+/* Custom CSS for model-viewer's default AR button */
+model-viewer::part(ar-button) {
+    display: none;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .planets-grid-xx {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .planet-detail-content-xx {
+        flex-direction: column;
+        height: auto;
+        padding-top: 80px;
+    }
+    
+    .planet-detail-model-xx {
+        margin-bottom: 30px;
+    }
+    
+    .planet-detail-model-xx model-viewer {
+        height: 40vh;
+    }
+    
+    .planet-detail-info-xx {
+        margin: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .planets-grid-xx {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+    
+    .planets-title-xx {
+        font-size: 42px;
+    }
+    
+    .rocket-icon-xx, .astronaut-icon-xx {
+        width: 50px;
+        height: 50px;
+    }
+
+    .planet-detail-title-xx {
+        font-size: 36px;
+    }
+    
+    .planet-detail-subtitle-xx {
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .planets-grid-xx {
+        grid-template-columns: 1fr;
+    }
+    
+    .planets-title-xx {
+        font-size: 32px;
+    }
+    
+    .search-container-xx {
+        width: 90%;
+    }
+    
+    .planet-detail-description-xx {
+        font-size: 24px;
+    }
+    
+    .planet-name-xx {
+        font-size: 20px;
+    }
+    
+    .back-button-xx span {
+        display: none;
+    }
+    
+    .ar-button-xx span {
+        display: none;
+    }
+    
+    .play-button-xx span {
+        display: none;
+    }
+}
+
+
+
+/* Add these to your planets-kids.css file */
+
+/* AR Button styling */
+.ar-button-xx {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #1e88e5;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 30px;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    margin-top: 15px;
+  }
+  
+  .ar-button-xx:hover {
+    background-color: #1565c0;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+  }
+  
+  .ar-button-xx:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+  
+  .ar-button-xx img {
+    width: 24px;
+    height: 24px;
+    margin-right: 8px;
+  }
+  
+  .ar-active-xx {
+    background-color: #ef5350;
+  }
+  
+  .ar-active-xx:hover {
+    background-color: #d32f2f;
+  }
+  
+  .ar-disabled-xx {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: #9e9e9e;
+  }
+  
+  /* AR Scene styles */
+  .ar-scene-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background-color: #000;
+  }
+  
+  .ar-close-button {
+    transition: all 0.3s ease;
+  }
+  
+  .ar-close-button:hover {
+    background-color: #f5f5f5;
+    transform: scale(1.05);
+  }
+  
+  .planet-label {
+    animation: fadeIn 0.5s ease;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0); }
+  }
+  
+  .loading-indicator {
+    animation: pulse 1.5s infinite;
+  }
+  
+  @keyframes pulse {
+    0% { opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
+  }
+  
+  /* Custom AR button for model-viewer */
+  model-viewer::part(default-ar-button) {
+    display: none;
+  }
+  
+  .ar-button-custom {
+    background-color: #1e88e5;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 30px;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+}
+
+/* Sun and Moon specific styles */
+.sun-moon-header-icons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.header-emoji {
+  font-size: 2.5rem;
+  animation: bounce 2s infinite;
+}
+
+.sun-emoji {
+  animation-delay: 0s;
+}
+
+.moon-emoji {
+  animation-delay: 1s;
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+.body-emoji {
+  font-size: 2rem;
+  margin-right: 15px;
+  animation: pulse 2s infinite;
+}
+
+.body-emoji-small {
+  font-size: 1.2rem;
+  margin-right: 8px;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.sun-moon-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.sun-moon-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.1) 0%, transparent 70%);
+  animation: rotate 10s linear infinite;
+  z-index: 0;
+}
+
+.sun-moon-card .planet-model-container-xx {
+  position: relative;
+  z-index: 1;
+}
+
+/* Special effects for Sun model */
+.sun-moon-card[style*="rgb(255, 215, 0)"] model-viewer {
+  filter: brightness(1.3) saturate(1.2);
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.2) 0%, transparent 70%);
+}
+
+.sun-moon-card[style*="rgb(255, 215, 0)"] .planet-model-container-xx::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle, rgba(255, 165, 0, 0.3) 0%, transparent 60%);
+  pointer-events: none;
+  border-radius: inherit;
+  animation: sunGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes sunGlow {
+  0% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0.6;
+    transform: scale(1.05);
+  }
+}
+
+/* Special effects for Moon model */
+.sun-moon-card[style*="rgb(192, 192, 192)"] model-viewer {
+  filter: brightness(0.9) contrast(1.1);
+}
+
+.sun-moon-card[style*="rgb(192, 192, 192)"] .planet-model-container-xx::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle, rgba(192, 192, 192, 0.2) 0%, transparent 70%);
+  pointer-events: none;
+  border-radius: inherit;
+  animation: moonGlow 4s ease-in-out infinite alternate;
+}
+
+@keyframes moonGlow {
+  0% {
+    opacity: 0.2;
+  }
+  100% {
+    opacity: 0.4;
+  }
+}
+
+/* Detail view enhancements */
+.planet-detail-container-xx[style*="rgba(255, 215, 0"] .planet-detail-model-xx model-viewer {
+  filter: brightness(1.4) saturate(1.3);
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.1) 0%, transparent 70%);
+}
+
+.planet-detail-container-xx[style*="rgba(255, 215, 0"] .planet-detail-model-xx::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle, rgba(255, 165, 0, 0.2) 0%, transparent 80%);
+  pointer-events: none;
+  border-radius: inherit;
+  animation: sunDetailGlow 2s ease-in-out infinite alternate;
+}
+
+.planet-detail-container-xx[style*="rgba(192, 192, 192"] .planet-detail-model-xx model-viewer {
+  filter: brightness(1.1) contrast(1.2);
+}
+
+@keyframes sunDetailGlow {
+  0% {
+    opacity: 0.2;
+  }
+  100% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

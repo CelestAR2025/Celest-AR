@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Taurus Constellation AR</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Explore the Taurus constellation in Augmented Reality">
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.rawgit.com/jeromeetienne/AR.js/2.2.1/aframe/build/aframe-ar.js"></script>
+    <link rel="stylesheet" href="constellation-styles.css">
+  </head>
+  <body>
+    <div id="loadingScreen" class="loading-screen">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">Loading Constellation AR</div>
+      <div class="loading-subtext">Please allow camera access</div>
+    </div>
+
+    <div class="constellation-header">
+      <div class="header-content">
+        <div>
+          <div class="constellation-title">🌟 Taurus</div>
+          <div class="constellation-subtitle">Constellation AR Experience</div>
+        </div>
+        <div class="status-indicator">
+          <div id="statusDot" class="status-dot"></div>
+          <div id="statusText" class="status-text">Scanning...</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="control-panel">
+      <div class="control-title">Constellation Views</div>
+      <div class="control-buttons">
+        <button id="basicBtn" class="control-btn active" onclick="showBasic()">🌌 Basic View</button>
+        <button id="namesBtn" class="control-btn" onclick="showWithNames()">✨ With Star Names</button>
+        <button id="signBtn" class="control-btn" onclick="showWithSign()">♉ With Sign</button>
+      </div>
+    </div>
+
+    <div class="instructions-panel">
+      <div class="instructions-title">How to Use</div>
+      <div class="instruction-item"><div class="instruction-icon">1</div><span>Point camera at marker</span></div>
+      <div class="instruction-item"><div class="instruction-icon">2</div><span>Wait for constellation to appear</span></div>
+      <div class="instruction-item"><div class="instruction-icon">3</div><span>Use buttons to switch views</span></div>
+      <div class="instruction-item"><div class="instruction-icon">4</div><span>Explore constellation details</span></div>
+    </div>
+
+    <div id="infoBox" class="info-panel">
+      <button class="info-close" onclick="closeInfo()">×</button>
+      <div id="infoContent"></div>
+    </div>
+
+    <a-scene embedded arjs>
+      <a-marker type="pattern" url="Constellations/pattern/pattern-taurus.patt">
+        <a-plane id="constellationModel"
+          src="models/Constellations/taurus.png"
+          transparent="true" width="2" height="2" rotation="-90 0 0">
+        </a-plane>
+      </a-marker>
+
+      <a-entity camera></a-entity>
+    </a-scene>
+
+    <script>
+      let model = null;
+      let infoBox = null;
+      let infoContent = null;
+      let basicBtn = null;
+      let namesBtn = null;
+      let signBtn = null;
+      let statusDot = null;
+      let statusText = null;
+      let loadingScreen = null;
+      let isWithNames = false;
+      let isWithSign = false;
+
+      function getEls() {
+        if (!model) model = document.getElementById('constellationModel');
+        if (!infoBox) infoBox = document.getElementById('infoBox');
+        if (!infoContent) infoContent = document.getElementById('infoContent');
+        if (!basicBtn) basicBtn = document.getElementById('basicBtn');
+        if (!namesBtn) namesBtn = document.getElementById('namesBtn');
+        if (!signBtn) signBtn = document.getElementById('signBtn');
+        if (!statusDot) statusDot = document.getElementById('statusDot');
+        if (!statusText) statusText = document.getElementById('statusText');
+        if (!loadingScreen) loadingScreen = document.getElementById('loadingScreen');
+      }
+
+      function updateButtons() {
+        if (!basicBtn || !namesBtn || !signBtn) return;
+        basicBtn.classList.remove('active');
+        namesBtn.classList.remove('active');
+        signBtn.classList.remove('active');
+        if (isWithSign) signBtn.classList.add('active');
+        else if (isWithNames) namesBtn.classList.add('active');
+        else basicBtn.classList.add('active');
+      }
+
+      function updateStatus(text, active) {
+        if (statusText) statusText.textContent = text;
+        if (statusDot) statusDot.classList.toggle('active', !!active);
+      }
+
+      function hideLoading() { if (loadingScreen) loadingScreen.style.display = 'none'; }
+      function closeInfo() { if (infoBox) infoBox.style.display = 'none'; }
+
+      function speak(text) {
+        if ('speechSynthesis' in window) {
+          speechSynthesis.cancel();
+          const u = new SpeechSynthesisUtterance(text);
+          u.lang = 'en-US'; u.rate = 0.95; u.pitch = 1; speechSynthesis.speak(u);
+        }
+      }
+
+      // Zoom feature (wheel + pinch)
+      (function setupZoom(){
+        let baseScale = 1;
+        let currentScale = 1;
+        const minScale = 0.3;
+        const maxScale = 4;
+        let pinchStartDist = 0;
+        let isPinching = false;
+
+        function getModel(){ if (!model) model = document.getElementById('constellationModel'); return model; }
+        function applyScale(s){ const m=getModel(); if(!m) return; m.setAttribute('scale', `${s} ${s} ${s}`); }
+        function clamp(v,min,max){ return Math.min(max, Math.max(min, v)); }
+
+        window.addEventListener('wheel', function(e){
+          const delta = -e.deltaY * 0.0015;
+          currentScale = clamp(currentScale + delta, minScale, maxScale);
+          applyScale(currentScale);
+        }, { passive: true });
+
+        document.addEventListener('touchstart', function(e){
+          if (e.touches && e.touches.length === 2){
+            isPinching = true;
+            pinchStartDist = Math.hypot(
+              e.touches[0].clientX - e.touches[1].clientX,
+              e.touches[0].clientY - e.touches[1].clientY
+            );
+            baseScale = currentScale;
+          }
+        }, { passive: true });
+
+        document.addEventListener('touchmove', function(e){
+          if (!isPinching || !(e.touches && e.touches.length === 2)) return;
+          const dist = Math.hypot(
+            e.touches[0].clientX - e.touches[1].clientX,
+            e.touches[0].clientY - e.touches[1].clientY
+          );
+          const factor = dist / (pinchStartDist || dist);
+          currentScale = clamp(baseScale * factor, minScale, maxScale);
+          applyScale(currentScale);
+        }, { passive: true });
+
+        document.addEventListener('touchend', function(e){ if (e.touches.length < 2){ isPinching = false; } });
+      })();
+
+      function showBasic() {
+        getEls(); isWithNames = false; isWithSign = false; updateButtons();
+        if (model) model.setAttribute('src', 'models/Constellations/taurus.png');
+        if (infoContent) {
+          infoContent.innerHTML = `
+            <div class="info-title">🌌 Taurus</div>
+            <div class="info-content">Taurus is a zodiac constellation containing the Hyades and Pleiades clusters. Aldebaran is its brightest star.</div>
+            <div class="info-details"><strong>Fun Fact:</strong> The Taurus Bull is associated with many ancient mythologies.</div>
+          `;
+        }
+        if (infoBox) infoBox.style.display = 'block';
+        speak('Showing Taurus constellation.');
+      }
+
+      function showWithNames() {
+        getEls(); isWithNames = true; isWithSign = false; updateButtons();
+        if (model) model.setAttribute('src', 'models/Constellations/taurus-with-name.png');
+        if (infoContent) {
+          infoContent.innerHTML = `
+            <div class="info-title">✨ Taurus with Star Names</div>
+            <div class="info-content">Labels key stars and features within Taurus.</div>
+          `;
+        }
+        if (infoBox) infoBox.style.display = 'block';
+        speak('Showing Taurus with star names.');
+      }
+
+      function showWithSign() {
+        getEls(); isWithNames = false; isWithSign = true; updateButtons();
+        if (model) model.setAttribute('src', 'models/constellations/taurus=with-sign.png');
+        if (infoContent) {
+          infoContent.innerHTML = `
+            <div class="info-title">♉ Taurus with Sign</div>
+            <div class="info-content">Shows Taurus with its zodiac sign overlay.</div>
+          `;
+        }
+        if (infoBox) infoBox.style.display = 'block';
+        speak('Showing Taurus with sign overlay.');
+      }
+
+      document.addEventListener('DOMContentLoaded', function () {
+        setTimeout(() => {
+          getEls();
+          const marker = document.querySelector('a-marker');
+          if (marker) {
+            marker.addEventListener('markerFound', () => { updateStatus('Constellation Detected!', true); hideLoading(); showBasic(); });
+            marker.addEventListener('markerLost', () => { updateStatus('Scanning...', false); });
+          }
+          updateButtons();
+          setTimeout(() => { if (loadingScreen && loadingScreen.style.display !== 'none') { hideLoading(); updateStatus('Ready to Scan', false);} }, 3000);
+        }, 800);
+      });
+    </script>
+  </body>
+</html>
+
+

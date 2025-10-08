@@ -1,0 +1,207 @@
+/* Planet Modal Styles */
+.planet-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.planet-modal-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(4px);
+}
+
+.planet-modal-container {
+  position: relative;
+  background-color: #1f2937;
+  border-radius: 1rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  max-width: 28rem;
+  width: 100%;
+  margin: 0 1rem;
+  transform: scale(1);
+  transition: all 0.3s ease;
+}
+
+.planet-modal-header {
+  border-radius: 1rem 1rem 0 0;
+  padding: 1.5rem;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.planet-modal-bg-pattern {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0.2;
+}
+
+.planet-modal-circle-1 {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 8rem;
+  height: 8rem;
+  border-radius: 50%;
+  background-color: white;
+  transform: translate(4rem, -4rem);
+}
+
+.planet-modal-circle-2 {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 6rem;
+  height: 6rem;
+  border-radius: 50%;
+  background-color: white;
+  transform: translate(-3rem, 3rem);
+}
+
+.planet-modal-header-content {
+  position: relative;
+  z-index: 10;
+}
+
+.planet-modal-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+}
+
+.planet-modal-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.planet-modal-type {
+  font-size: 0.875rem;
+  opacity: 0.9;
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+}
+
+.planet-modal-close-btn {
+  padding: 0.5rem;
+  border-radius: 9999px;
+  transition: background-color 0.2s ease;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+.planet-modal-close-btn:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.planet-modal-close-icon {
+  font-size: 1.25rem;
+}
+
+.planet-modal-body {
+  padding: 1.5rem;
+  color: white;
+}
+
+.planet-modal-about {
+  margin-bottom: 1.5rem;
+}
+
+.planet-modal-about-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+}
+
+.planet-modal-about-icon {
+  width: 0.5rem;
+  height: 0.5rem;
+  background-color: #60a5fa;
+  border-radius: 50%;
+  margin-right: 0.75rem;
+}
+
+.planet-modal-description {
+  color: #d1d5db;
+  line-height: 1.625;
+}
+
+.planet-modal-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.planet-modal-btn {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.planet-modal-btn-primary {
+  background-color: #2563eb;
+  color: white;
+}
+
+.planet-modal-btn-primary:hover {
+  background-color: #1d4ed8;
+}
+
+.planet-modal-btn-secondary {
+  background-color: #374151;
+  color: white;
+}
+
+.planet-modal-btn-secondary:hover {
+  background-color: #4b5563;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 640px) {
+  .planet-modal-container {
+    margin: 0 0.5rem;
+  }
+  
+  .planet-modal-header {
+    padding: 1rem;
+  }
+  
+  .planet-modal-body {
+    padding: 1rem;
+  }
+  
+  .planet-modal-title {
+    font-size: 1.25rem;
+  }
+  
+  .planet-modal-actions {
+    flex-direction: column;
+  }
+}

@@ -1,0 +1,457 @@
+/* Main Container */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-image: url('https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=2071');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    color: white;
+}
+.view-3d-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background-color: #1e88e5;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+  }
+  
+  .view-3d-button:hover {
+    background-color: #1565c0;
+  }
+  
+  .view-3d-icon {
+    fill: white;
+  }
+/* Main Container */
+.stars-container {
+    text-align: center;
+    padding: 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-size: cover;
+    font-family: 'Comic Sans MS', 'Bubblegum Sans', cursive;
+}
+
+/* Header with Icons */
+.stars-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 30px;
+    margin-top: 30px;
+}
+
+.rocket-icon, .astronaut-icon {
+    width: 70px;
+    height: 70px;
+    margin: 0 20px;
+}
+
+/* Title */
+.stars-title {
+    font-size: 64px;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 
+        0 0 10px #ff9900,
+        0 0 20px #ff6600;
+    margin: 0;
+    letter-spacing: 2px;
+}
+
+/* Search Container */
+.search-container {
+    width: 100%;
+    max-width: 600px;
+    margin-bottom: 40px;
+}
+
+/* Search Bar */
+.search-bar {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 8px 16px;
+    border-radius: 50px;
+    border: 4px solid #ff9900;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.search-bar input {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    outline: none;
+    font-size: 18px;
+    background: transparent;
+    color: #333;
+    font-family: 'Comic Sans MS', 'Bubblegum Sans', cursive;
+}
+
+.search-bar input::placeholder {
+    color: #888;
+}
+
+.search-bar button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.search-icon {
+    width: 28px;
+    height: 28px;
+}
+
+/* Stars Grid */
+.stars-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px;
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+/* Star Box */
+.star-box {
+    border-radius: 20px;
+    overflow: hidden;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    aspect-ratio: 1/1.2;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 5px solid #fff;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+.star-box:hover {
+    transform: scale(1.05) translateY(-10px);
+    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.4);
+}
+
+/* Star Model Container */
+.star-model-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background: transparent;
+}
+
+/* Model Viewer */
+model-viewer {
+    width: 100%;
+    height: 100%;
+    --poster-color: transparent;
+    --progress-mask: transparent;
+    background-color: transparent !important;
+}
+
+/* Star Name Banner */
+.star-name-banner {
+    width: 100%;
+    padding: 12px 0;
+    background-color: #ff9900;
+}
+
+.star-name {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 0;
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    background-color: #ff9900;
+    padding: 12px 0;
+}
+
+/* Star Detail View */
+.star-detail-container {
+    min-height: 100vh;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    font-family: 'Comic Sans MS', 'Bubblegum Sans', cursive;
+    padding-top: 20px;
+}
+
+.back-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    padding: 10px 20px;
+    border-radius: 30px;
+    background-color: #ff9900;
+    border: 3px solid white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s ease;
+}
+
+.back-button:hover {
+    transform: scale(1.05);
+}
+
+.back-button span {
+    margin-left: 8px;
+}
+
+.back-icon {
+    width: 20px;
+    height: 20px;
+}
+
+.star-detail-content {
+    display: flex;
+    min-height: 90vh;
+    padding: 80px 20px 20px 20px;
+}
+
+.star-detail-model {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.star-detail-model model-viewer {
+    width: 100%;
+    height: 70vh;
+    --poster-color: transparent;
+    --progress-bar-color: #FFD700;
+    --progress-mask: transparent;
+}
+
+.ar-button {
+    position: absolute;
+    bottom: 30px;
+    left: 30px;
+    padding: 10px 20px;
+    border-radius: 30px;
+    background-color: #ff6600;
+    color: white;
+    border: 3px solid white;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    z-index: 5;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.ar-button:hover {
+    transform: scale(1.05);
+    background-color: #ff9900;
+}
+
+.ar-button img {
+    width: 24px;
+    height: 24px;
+    margin-right: 8px;
+}
+
+.ar-active {
+    background-color: #cc0000;
+}
+
+.star-detail-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    border-radius: 20px;
+    overflow: hidden;
+    margin: 0 20px;
+    background-color: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    border: 5px solid;
+}
+
+.star-detail-header {
+    padding: 20px;
+    text-align: center;
+}
+
+.star-detail-title {
+    font-size: 48px;
+    font-weight: bold;
+    margin: 0 0 5px 0;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.star-detail-subtitle {
+    font-size: 24px;
+    color: white;
+    margin: 0;
+    opacity: 0.9;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.star-detail-body {
+    padding: 30px;
+    position: relative;
+    flex: 1;
+    display: flex;
+    background-color: white;
+}
+
+.star-detail-description {
+    font-size: 28px;
+    line-height: 1.8;
+    color: #333;
+    margin-bottom: 60px;
+    font-weight: 500;
+}
+
+.play-button {
+    position: absolute;
+    bottom: 20px;
+    padding: 10px 20px;
+    border-radius: 30px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s ease, background-color 0.2s ease;
+    border: 3px solid #2E7D32;
+}
+
+.play-button:hover {
+    transform: scale(1.05);
+}
+
+.play-button img {
+    width: 24px;
+    height: 24px;
+    margin-right: 8px;
+}
+
+.play-button.speaking {
+    background-color: #F44336;
+    border-color: #C62828;
+}
+
+/* Custom CSS for model-viewer's default AR button */
+model-viewer::part(ar-button) {
+    display: none;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .stars-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .star-detail-content {
+        flex-direction: column;
+        height: auto;
+        padding-top: 80px;
+    }
+    
+    .star-detail-model {
+        margin-bottom: 30px;
+    }
+    
+    .star-detail-model model-viewer {
+        height: 40vh;
+    }
+    
+    .star-detail-info {
+        margin: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .stars-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+    
+    .stars-title {
+        font-size: 42px;
+    }
+    
+    .rocket-icon, .astronaut-icon {
+        width: 50px;
+        height: 50px;
+    }
+
+    .star-detail-title {
+        font-size: 36px;
+    }
+    
+    .star-detail-subtitle {
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .stars-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .stars-title {
+        font-size: 32px;
+    }
+    
+    .search-container {
+        width: 90%;
+    }
+    
+    .star-detail-description {
+        font-size: 24px;
+    }
+    
+    .star-name {
+        font-size: 20px;
+    }
+    
+    .back-button span {
+        display: none;
+    }
+    
+    .ar-button span {
+        display: none;
+    }
+    
+    .play-button span {
+        display: none;
+    }
+}

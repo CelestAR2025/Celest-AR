@@ -1,0 +1,285 @@
+/* Responsive AR Scenes CSS */
+/* This file provides responsive styles for all AR scenes in the CelestAR application */
+
+/* Base AR Scene Styles */
+.ar-scene-container {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+/* AR Controls Responsive */
+.ar-controls {
+  position: fixed;
+  z-index: 1000;
+  padding: 10px;
+}
+
+/* Mobile AR Optimizations */
+@media (max-width: 768px) {
+  /* AR Back Button */
+  .ar-back-button {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    padding: 10px 15px;
+    font-size: 14px;
+    min-width: 100px;
+    min-height: 44px;
+    z-index: 1001;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+  }
+  
+  /* AR Info Panel */
+  .ar-info-panel {
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+    max-width: calc(100% - 20px);
+    max-height: 40vh;
+    overflow-y: auto;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    padding: 15px;
+    font-size: 14px;
+    z-index: 1000;
+  }
+  
+  .ar-info-panel h3 {
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+  
+  .ar-info-panel p {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  
+  /* AR Control Buttons */
+  .ar-control-button {
+    min-width: 44px;
+    min-height: 44px;
+    padding: 10px;
+    font-size: 14px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.9);
+    border: 2px solid #4CAF50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* AR Loading Screen */
+  .ar-loading {
+    font-size: 16px;
+    padding: 20px;
+  }
+  
+  .ar-loading-spinner {
+    width: 50px;
+    height: 50px;
+  }
+  
+  /* AR Status Indicator */
+  .ar-status {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    padding: 8px 12px;
+    font-size: 12px;
+    background: rgba(76, 175, 80, 0.9);
+    color: white;
+    border-radius: 20px;
+    z-index: 1000;
+  }
+  
+  /* AR Zoom Controls */
+  .ar-zoom-controls {
+    position: fixed;
+    right: 10px;
+    bottom: 60px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 999;
+  }
+  
+  .ar-zoom-button {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.9);
+    border: 2px solid #2196F3;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* AR Speech Button */
+  .ar-speech-button {
+    position: fixed;
+    left: 10px;
+    bottom: 60px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(255, 152, 0, 0.9);
+    color: white;
+    border: none;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+  }
+}
+
+/* Tablet AR Optimizations */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .ar-back-button {
+    padding: 12px 20px;
+    font-size: 16px;
+  }
+  
+  .ar-info-panel {
+    bottom: 20px;
+    left: 20px;
+    right: auto;
+    max-width: 400px;
+    font-size: 15px;
+  }
+  
+  .ar-control-button {
+    width: 50px;
+    height: 50px;
+    font-size: 16px;
+  }
+}
+
+/* Landscape Mobile AR */
+@media (max-width: 768px) and (orientation: landscape) {
+  .ar-info-panel {
+    max-height: 60vh;
+    bottom: 5px;
+    left: 5px;
+    right: 5px;
+  }
+  
+  .ar-back-button {
+    top: 5px;
+    left: 5px;
+  }
+  
+  .ar-zoom-controls {
+    bottom: 10px;
+    right: 5px;
+  }
+  
+  .ar-speech-button {
+    bottom: 10px;
+    left: 5px;
+  }
+}
+
+/* Touch Gesture Indicators */
+@media (pointer: coarse) {
+  .touch-indicator {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 15px 25px;
+    border-radius: 30px;
+    font-size: 14px;
+    z-index: 1002;
+    pointer-events: none;
+    animation: fadeInOut 3s ease-in-out;
+  }
+  
+  @keyframes fadeInOut {
+    0% { opacity: 0; }
+    20% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+}
+
+/* AR Scene Text Responsiveness */
+@media (max-width: 480px) {
+  .ar-planet-label {
+    font-size: 12px;
+    padding: 5px 10px;
+  }
+  
+  .ar-constellation-label {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+  
+  .ar-info-title {
+    font-size: 16px;
+  }
+  
+  .ar-info-description {
+    font-size: 13px;
+  }
+}
+
+/* High DPI Screens */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .ar-controls {
+    transform: scale(1);
+    transform-origin: top left;
+  }
+}
+
+/* Accessibility Improvements */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .ar-info-panel {
+    background: rgba(30, 30, 30, 0.95);
+    color: white;
+  }
+  
+  .ar-back-button {
+    background: rgba(50, 50, 50, 0.95);
+    color: white;
+  }
+}
+
+/* Print Styles (for AR screenshots) */
+@media print {
+  .ar-controls,
+  .ar-back-button,
+  .ar-zoom-controls,
+  .ar-speech-button {
+    display: none !important;
+  }
+  
+  .ar-info-panel {
+    position: static;
+    background: white;
+    color: black;
+    box-shadow: none;
+    margin: 20px;
+    page-break-inside: avoid;
+  }
+}

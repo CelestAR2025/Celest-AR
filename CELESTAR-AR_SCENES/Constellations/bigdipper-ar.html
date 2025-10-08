@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Big Dipper Constellation AR</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Explore the Big Dipper constellation in Augmented Reality">
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.rawgit.com/jeromeetienne/AR.js/2.2.1/aframe/build/aframe-ar.js"></script>
+    <link rel="stylesheet" href="../constellation-styles.css">
+  </head>
+  <body>
+    <div id="loadingScreen" class="loading-screen">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">Loading Constellation AR</div>
+      <div class="loading-subtext">Please allow camera access</div>
+    </div>
+
+    <div class="constellation-header">
+      <div class="header-content">
+        <div>
+          <div class="constellation-title">🌟 Big Dipper</div>
+          <div class="constellation-subtitle">Constellation AR Experience</div>
+        </div>
+        <div class="status-indicator">
+          <div id="statusDot" class="status-dot"></div>
+          <div id="statusText" class="status-text">Scanning...</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="control-panel">
+      <div class="control-title">Constellation Views</div>
+      <div class="control-buttons">
+        <button id="basicBtn" class="control-btn active" onclick="showBigDipper()">🌌 Basic View</button>
+        <button id="namesBtn" class="control-btn" onclick="showBigDipperWithName()">✨ With Star Names</button>
+      </div>
+    </div>
+
+    <div class="instructions-panel">
+      <div class="instructions-title">How to Use</div>
+      <div class="instruction-item"><div class="instruction-icon">1</div><span>Point camera at Hiro marker</span></div>
+      <div class="instruction-item"><div class="instruction-icon">2</div><span>Wait for constellation to appear</span></div>
+      <div class="instruction-item"><div class="instruction-icon">3</div><span>Use buttons to switch views</span></div>
+      <div class="instruction-item"><div class="instruction-icon">4</div><span>Explore constellation details</span></div>
+    </div>
+
+    <div id="infoBox" class="info-panel">
+      <button class="info-close" onclick="closeInfo()">×</button>
+      <div id="infoContent"></div>
+    </div>
+
+    <a-scene embedded arjs>
+      <a-marker preset="hiro">
+        <a-plane id="bigDipperModel"
+          src="../models/Constellations/bigdipper.png"
+          transparent="true" width="2" height="2" rotation="-90 0 0">
+        </a-plane>
+      </a-marker>
+
+      <a-entity camera></a-entity>
+    </a-scene>
+
+    <script>
+      let bigDipperModel = null;
+      let infoBox = null;
+      let infoContent = null;
+      let basicBtn = null;
+      let namesBtn = null;
+      let statusDot = null;
+      let statusText = null;
+      let loadingScreen = null;
+
+      function getEls() {
+        if (!bigDipperModel) bigDipperModel = document.getElementById('bigDipperModel');
+        if (!infoBox) infoBox = document.getElementById('infoBox');
+        if (!infoContent) infoContent = document.getElementById('infoContent');
+        if (!basicBtn) basicBtn = document.getElementById('basicBtn');
+        if (!namesBtn) namesBtn = document.getElementById('namesBtn');
+        if (!statusDot) statusDot = document.getElementById('statusDot');
+        if (!statusText) statusText = document.getElementById('statusText');
+        if (!loadingScreen) loadingScreen = document.getElementById('loadingScreen');
+      }
+
+      function updateButtons(active) {
+        if (!basicBtn || !namesBtn) return;
+        basicBtn.classList.remove('active');
+        namesBtn.classList.remove('active');
+        if (active === 'basic') basicBtn.classList.add('active');
+        if (active === 'names') namesBtn.classList.add('active');
+      }
+
+      function updateStatus(text, active) {
+        if (statusText) statusText.textContent = text;
+        if (statusDot) statusDot.classList.toggle('active', !!active);
+      }
+      function hideLoading(){ if(loadingScreen) loadingScreen.style.display='none'; }
+      function closeInfo(){ if(infoBox) infoBox.style.display='none'; }
+      function speak(t){ if('speechSynthesis' in window){ speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(t); u.lang='en-US'; u.rate=.95; u.pitch=1; speechSynthesis.speak(u);} }
+
+      function showBigDipper(){
+        getEls(); updateButtons('basic');
+        if (bigDipperModel) bigDipperModel.setAttribute('src','../models/Constellations/bigdipper.png');
+        if (infoContent){ infoContent.innerHTML=`
+          <div class="info-title">🌌 Big Dipper</div>
+          <div class="info-content">The Big Dipper is an asterism in Ursa Major.</div>
+        `; }
+        if (infoBox) infoBox.style.display='block';
+        speak('Showing Big Dipper.');
+      }
+
+      function showBigDipperWithName(){
+        getEls(); updateButtons('names');
+        if (bigDipperModel) bigDipperModel.setAttribute('src','../Constellations/png/bigdipper-with-name.png');
+        if (infoContent){ infoContent.innerHTML=`
+          <div class="info-title">✨ Big Dipper with Names</div>
+          <div class="info-content">Shows star names of the asterism.</div>
+        `; }
+        if (infoBox) infoBox.style.display='block';
+        speak('Showing Big Dipper with star names.');
+      }
+
+      document.addEventListener('DOMContentLoaded', function(){
+        setTimeout(()=>{
+          getEls();
+          const marker=document.querySelector('a-marker');
+          if(marker){
+            marker.addEventListener('markerFound',()=>{ updateStatus('Constellation Detected!',true); hideLoading(); showBigDipper();});
+            marker.addEventListener('markerLost',()=>{ updateStatus('Scanning...',false); });
+          }
+          updateButtons('basic');
+          setTimeout(()=>{ if(loadingScreen && loadingScreen.style.display!=='none'){ hideLoading(); updateStatus('Ready to Scan',false);} },3000);
+        },800);
+      });
+    </script>
+  </body>
+</html>
+
+

@@ -1,0 +1,212 @@
+/* planets2.css - Complete rewrite to match the screenshot */
+
+/* Global Styles */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-image: url('https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=2071');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  color: white;
+}
+
+/* General Page Styles */
+.planets-page {
+  text-align: center;
+  color: white;
+  padding: 20px;
+  min-height: 100vh;
+}
+
+/* Title */
+.planets-title {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  font-weight: bold;
+  text-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+
+}
+.planet-name {
+  color: white; /* Change text color to white */
+  font-size: 18px; /* Adjust size if needed */
+  font-weight: bold;
+  text-align: center;
+  margin-top: 10px;
+}
+/* Search Bar */
+.search-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.search-input {
+  width: 300px;
+  padding: 10px;
+  font-size: 1rem;
+  border: 2px solid #fff;
+  border-radius: 5px;
+  background-color: #222;
+  color: white;
+}
+
+/* Grid Layout for Planets */
+.planets-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 20px;
+  padding: 20px;
+  max-width: 1000px;
+  margin: auto;
+}
+
+.planet-box {
+  background-color: rgba(0, 0, 0, 0.3); /* Slightly transparent */
+  border-radius: 10px;
+  padding: 10px;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+}
+.planet-box:hover {
+  transform: scale(1.05);
+}
+
+/* 3D Model Viewer */
+.planet-content {
+  position: relative;
+}
+
+.planet-image-container {
+  position: relative;
+  width: 100%;
+  height: 150px;
+  overflow: hidden;
+}
+
+model-viewer {
+  width: 100%;
+  height: 100%;
+  background-color: transparent;
+}
+
+.click-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.planet-box:hover .click-overlay {
+  opacity: 1;
+}
+
+/* Modal Styling */
+.modal-layout {
+  display: flex;
+  gap: 20px;
+  flex-direction: row;
+  align-items: center;
+  color: white;
+  background-color: #222;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.modal-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.planet-model {
+  width: 250px;
+  height: 250px;
+}
+
+.ar-button {
+  margin-top: 10px;
+  padding: 8px 15px;
+  font-size: 1rem;
+  background: #ff9800;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.modal-right {
+  flex: 2;
+  text-align: left;
+}
+
+.planet-title {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.planet-description {
+  margin-top: 10px;
+  font-size: 1rem;
+}
+
+/* Navigation Buttons */
+.button-group {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.nav-button {
+  font-size: 1.5rem;
+  padding: 5px 10px;
+  background: #444;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.nav-button:hover {
+  background: #666;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .modal-flex {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .planet-model {
+    max-width: 300px;
+  }
+}
+
+/* Responsive Layout */
+@media (max-width: 992px) {
+  .planets-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 576px) {
+  .planets-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .planet-image-container {
+    width: 120px;
+    height: 120px;
+  }
+}

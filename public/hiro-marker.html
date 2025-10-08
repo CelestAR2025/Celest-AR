@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HIRO Marker for AR Solar System</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 1.2em;
+            margin-bottom: 30px;
+        }
+        
+        .marker-container {
+            background: white;
+            border: 3px solid #333;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            display: inline-block;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .hiro-marker {
+            width: 200px;
+            height: 200px;
+            background: white;
+            border: 2px solid black;
+            position: relative;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .hiro-pattern {
+            width: 160px;
+            height: 160px;
+            background: black;
+            position: relative;
+        }
+        
+        .hiro-inner {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            bottom: 20px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .hiro-center {
+            width: 60px;
+            height: 60px;
+            background: black;
+            position: relative;
+        }
+        
+        .hiro-center::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            background: white;
+        }
+        
+        .hiro-center::after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            bottom: 20px;
+            background: black;
+        }
+        
+        .instructions {
+            text-align: left;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #007bff;
+        }
+        
+        .instructions h3 {
+            color: #007bff;
+            margin-top: 0;
+            font-size: 1.4em;
+        }
+        
+        .instructions ol {
+            color: #333;
+            line-height: 1.8;
+        }
+        
+        .instructions li {
+            margin-bottom: 10px;
+        }
+        
+        .print-button {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 20px 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .print-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .back-button {
+            background: linear-gradient(135deg, #ff4444, #cc0000);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 20px 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255, 68, 68, 0.3);
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(255, 68, 68, 0.4);
+            text-decoration: none;
+            color: white;
+        }
+        
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #ffeaa7;
+            margin: 20px 0;
+        }
+        
+        .warning strong {
+            color: #b8860b;
+        }
+        
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .container {
+                box-shadow: none;
+                padding: 10px;
+            }
+            
+            .print-button, .back-button, .instructions, .warning {
+                display: none;
+            }
+            
+            h1 {
+                font-size: 1.5em;
+                margin-bottom: 20px;
+            }
+            
+            .subtitle {
+                font-size: 1em;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            .hiro-marker {
+                width: 150px;
+                height: 150px;
+            }
+            
+            .hiro-pattern {
+                width: 120px;
+                height: 120px;
+            }
+            
+            .hiro-center {
+                width: 45px;
+                height: 45px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 HIRO Marker</h1>
+        <p class="subtitle">For AR Solar System Explorer</p>
+        
+        <div class="marker-container">
+            <div class="hiro-marker">
+                <div class="hiro-pattern">
+                    <div class="hiro-inner">
+                        <div class="hiro-center"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="warning">
+            <strong>Important:</strong> Print this marker on white paper at actual size (do not scale). The marker should be approximately 8cm x 8cm for best results.
+        </div>
+        
+        <div class="instructions">
+            <h3>📋 How to Use This Marker:</h3>
+            <ol>
+                <li><strong>Print:</strong> Click the "Print Marker" button below and print on white paper</li>
+                <li><strong>Cut:</strong> Cut out the marker along the black border</li>
+                <li><strong>Place:</strong> Put the marker on a flat, well-lit surface</li>
+                <li><strong>Open App:</strong> Go back to the AR Solar System Explorer</li>
+                <li><strong>Point Camera:</strong> Point your device's camera at the marker</li>
+                <li><strong>Enjoy:</strong> Watch the 3D solar system appear and click on planets to learn!</li>
+            </ol>
+        </div>
+        
+        <div class="instructions">
+            <h3>💡 Tips for Best AR Experience:</h3>
+            <ol>
+                <li>Ensure good lighting conditions</li>
+                <li>Keep the marker flat and unfolded</li>
+                <li>Hold your device steady when the AR loads</li>
+                <li>Move around the marker to see different angles</li>
+                <li>If AR doesn't work, try moving closer or farther from the marker</li>
+            </ol>
+        </div>
+        
+        <button class="print-button" onclick="window.print()">
+            🖨️ Print Marker
+        </button>
+        
+        <a href="javascript:history.back()" class="back-button">
+            ← Back to AR App
+        </a>
+        
+        <div style="margin-top: 30px; color: #666; font-size: 0.9em;">
+            <p>This is the standard HIRO marker used by AR.js for augmented reality experiences.</p>
+            <p>Make sure to print at actual size for proper detection.</p>
+        </div>
+    </div>
+</body>
+</html>

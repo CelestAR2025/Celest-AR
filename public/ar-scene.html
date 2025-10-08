@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AR Scene with Three.js</title>
+  <!-- Include Three.js and GLTFLoader -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+  <!-- Include AR.js for Three.js -->
+  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.3.4/three.js/build/ar-threex.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.3.4/three.js/build/ar.js"></script>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <script>
+    // Get the model URL from the query parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const modelUrl = decodeURIComponent(urlParams.get('model'));
+
+    // Log the model URL for debugging
+    console.log("Model URL:", modelUrl);
+
+    // Ensure the model URL is valid
+    if (!modelUrl) {
+      console.error("No model URL provided.");
+    }
+
+    // Initialize Three.js scene
+    const scene = new THREE.Scene();
+    const camera = new THREE.Camera();
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    // Initialize AR.js with error handling
+    let arToolkitSource, arToolkitContext;
+    
+    try {
+      arToolkitSource = new THREEx.ArToolkitSource({
+        sourceType: 'webcam',
+      });
+
+      arToolkitContext = new THREEx.ArToolkitContext({
+        cameraParametersUrl: 'https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.3.4/data/data/camera_para.dat',
+        detectionMode: 'mono',
+      });
+    } catch (error) {
+      console.error('Failed to initialize AR.js:', error);
+      document.body.innerHTML = '<div style="color: white; text-align: center; padding: 50px;">AR initialization failed. Please refresh the page.</div>';
+      return;
+    }
+
+    // Initialize marker-based AR
+    const markerRoot = new THREE.Group();
+    scene.add(markerRoot);
+
+    let arMarkerControls;
+    
+    try {
+      arMarkerControls = new THREEx.ArMarkerControls(arToolkitContext, markerRoot, {
+        type: 'pattern',
+        patternUrl: 'https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.3.4/data/data/hiro.patt', // Hiro marker
+      });
+    } catch (error) {
+      console.error('Failed to initialize AR marker controls:', error);
+      document.body.innerHTML = '<div style="color: white; text-align: center; padding: 50px;">AR marker initialization failed. Please refresh the page.</div>';
+      return;
+    }
+
+    // Load the 3D model
+    const loader = new THREE.GLTFLoader();
+    loader.load(modelUrl, (gltf) => {
+      const model = gltf.scene;
+      model.scale.set(0.5, 0.5, 0.5); // Adjust scale as needed
+      model.position.set(0, 0, 0); // Adjust position as needed
+      markerRoot.add(model);
+    }, undefined, (error) => {
+      console.error("Error loading 3D model:", error);
+    });
+
+    // Handle window resize
+    window.addEventListener('resize', () => {
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // Render loop
+    const animate = () => {
+      requestAnimationFrame(animate);
+
+      if (arToolkitSource.ready) {
+        arToolkitContext.update(arToolkitSource.domElement);
+        renderer.render(scene, camera);
+      }
+    };
+
+    // Start AR
+    arToolkitSource.init(() => {
+      arToolkitContext.init(() => {
+        camera.projectionMatrix.copy(arToolkitContext.getProjectionMatrix());
+        animate();
+      });
+    });
+  </script>
+</body>
+</html>

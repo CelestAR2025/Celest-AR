@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>CelestAR - Integrated AR Solar System</title>
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <script src="https://cdn.rawgit.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js" 
+            onerror="console.error('Failed to load AR.js library')"></script>
+    <link rel="stylesheet" href="constellation-styles.css">
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body, html { overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: transparent; }
+      .cosmic-panel { background: linear-gradient(135deg, rgba(26, 17, 64, 0.92), rgba(58, 31, 133, 0.92)); border: 1px solid rgba(255, 213, 79, 0.35); border-radius: 15px; color: #f7f3ff; box-shadow: 0 8px 32px rgba(0,0,0,0.35); }
+      #controls { position: absolute; top: 20px; right: 20px; padding: 20px; width: 280px; }
+      #controls h3 { font-size: 16px; text-align: center; margin-bottom: 12px; color: #ffd54f; }
+      .control-item { display: flex; align-items: center; gap: 10px; margin: 8px 0; padding: 8px; background: rgba(255,255,255,0.06); border-radius: 10px; }
+      .control-icon { background: linear-gradient(135deg, #5b2bbd, #7a3fe0); color: #fff; padding: 4px 8px; border-radius: 6px; font-weight: 600; min-width: 50px; text-align: center; font-size: 12px; }
+      .control-text { font-size: 13px; color: #f7f3ff; }
+      #infoBox, #soloInfoBox { position: absolute; left: 50%; transform: translateX(-50%); padding: 20px; bottom: 20px; display: none; max-width: 600px; }
+      #soloInfoBox h2 { margin: 0 0 10px; font-size: 22px; color: #ffd54f; }
+      #soloInfoBox p { margin: 0; font-size: 14px; color: #f7f3ff; }
+      .stat-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
+      .stat-row:last-child { border-bottom: none; }
+      .stat-label { color: #b9aed7; font-size: 12px; text-transform: uppercase; }
+      .stat-value { color: #ffd54f; font-size: 14px; font-weight: bold; }
+      #performanceMonitor { font-family: monospace; background: rgba(0,0,0,0.9) !important; border: 1px solid #00ff00; box-shadow: 0 0 10px rgba(0,255,0,0.3); }
+    </style>
+    <script>
+      // Error handling and WebGL recovery
+      window.addEventListener('error', function(e) {
+        console.error('Global error:', e.error);
+        if (e.error && e.error.message && e.error.message.includes('WebGL')) {
+          console.warn('WebGL context lost, attempting recovery...');
+          setTimeout(() => {
+            location.reload();
+          }, 2000);
+        }
+      });
+
+      // WebGL context lost handling
+      document.addEventListener('webglcontextlost', function(e) {
+        console.warn('WebGL context lost');
+        e.preventDefault();
+      });
+
+      document.addEventListener('webglcontextrestored', function() {
+        console.log('WebGL context restored');
+        location.reload();
+      });
+
+      // Global state for interactions
+      const state = {
+        active: null,
+        lastX: 0,
+        lastY: 0,
+        startRot: {x:0, y:0, z:0},
+        startScale: 1,
+        currentScale: 1,
+        isRotating: false,
+        isZooming: false,
+        initialTouchDistance: 0,
+        startDist: null,
+        minScale: 0.5,
+        maxScale: 3.0,
+        rotationSpeed: 0.5
+      };
+
+      // WebGL detection
+      function checkWebGLSupport() {
+        try {
+          const canvas = document.createElement('canvas');
+          const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+          return !!gl;
+        } catch (e) {
+          return false;
+        }
+      }
+
+      // Wait for A-Frame to be ready
+      document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM loaded, initializing A-Frame...');
+        
+        // Check WebGL support
+        if (!checkWebGLSupport()) {
+          console.error('WebGL not supported');
+          document.getElementById('webglFallback').style.display = 'block';
+          return;
+        }
+        
+        // Wait for A-Frame to be ready
+        if (typeof AFRAME !== 'undefined') {
+          initializeComponents();
+        } else {
+          // Wait for A-Frame to load
+          setTimeout(() => {
+            if (typeof AFRAME !== 'undefined') {
+              initializeComponents();
+            } else {
+              console.error('A-Frame failed to load');
+              document.getElementById('webglFallback').style.display = 'block';
+            }
+          }, 1000);
+        }
+      });
+
+      function initializeComponents() {
+        console.log('A-Frame ready, registering components...');
+        
+        // Enhanced raycaster component for better interaction
+        AFRAME.registerComponent('planet-interaction', {
+          init: function () {
+            const el = this.el;
+            
+            el.addEventListener('click', function (evt) {
+              console.log('Planet clicked:', el.id);
+              
+              // Get planet data
+              const text = planets[el.id];
+              if (text) {
+                showPlanetInfo(el.id, text);
+                speak(text);
+              }
+            });
+            
+            el.addEventListener('mouseenter', function () {
+              el.setAttribute('scale', '1.2 1.2 1.2');
+              el.setAttribute('material', 'emissive: #ffffff; emissiveIntensity: 0.3');
+            });
+            
+            el.addEventListener('mouseleave', function () {
+              el.setAttribute('scale', '1 1 1');
+              el.setAttribute('material', 'emissive: #000000; emissiveIntensity: 0');
+            });
+          }
+        });
+        
+        // Single unified drag-rotate component for individual planet markers
+        AFRAME.registerComponent('dragrotatable', {
+        schema: {
+          rotationSpeed: {default: 1}
+        },
+
+        init: function () {
+          this.rotating = false;
+          this.rotationX = 0;
+          this.rotationY = 0;
+          this.lastX = 0;
+          this.lastY = 0;
+          this.scale = 1;
+          
+          this.onDragStart = this.onDragStart.bind(this);
+          this.onDragMove = this.onDragMove.bind(this);
+          this.onDragEnd = this.onDragEnd.bind(this);
+          this.onWheel = this.onWheel.bind(this);
+          
+          this.el.addEventListener('mousedown', this.onDragStart);
+          this.el.addEventListener('touchstart', this.onDragStart);
+        },
+
+        onDragStart: function(evt) {
+          evt.preventDefault();
+          this.rotating = true;
+          
+          if (evt.touches && evt.touches.length > 0) {
+            this.lastX = evt.touches[0].clientX;
+            this.lastY = evt.touches[0].clientY;
+          } else {
+            this.lastX = evt.clientX;
+            this.lastY = evt.clientY;
+          }
+          
+          document.addEventListener('mousemove', this.onDragMove);
+          document.addEventListener('touchmove', this.onDragMove);
+          document.addEventListener('mouseup', this.onDragEnd);
+          document.addEventListener('touchend', this.onDragEnd);
+          this.el.addEventListener('wheel', this.onWheel);
+        },
+
+        onDragMove: function(evt) {
+          if (!this.rotating) return;
+          evt.preventDefault();
+          
+          let clientX, clientY;
+          if (evt.touches && evt.touches.length > 0) {
+            clientX = evt.touches[0].clientX;
+            clientY = evt.touches[0].clientY;
+          } else {
+            clientX = evt.clientX;
+            clientY = evt.clientY;
+          }
+          
+          const deltaX = clientX - this.lastX;
+          const deltaY = clientY - this.lastY;
+          
+          this.rotationY += deltaX * 0.5 * this.data.rotationSpeed;
+          this.rotationX += deltaY * 0.5 * this.data.rotationSpeed;
+          
+          this.el.object3D.rotation.y = THREE.Math.degToRad(this.rotationY);
+          this.el.object3D.rotation.x = THREE.Math.degToRad(this.rotationX);
+          
+          this.lastX = clientX;
+          this.lastY = clientY;
+        },
+
+        onDragEnd: function() {
+          this.rotating = false;
+          document.removeEventListener('mousemove', this.onDragMove);
+          document.removeEventListener('touchmove', this.onDragMove);
+          document.removeEventListener('mouseup', this.onDragEnd);
+          document.removeEventListener('touchend', this.onDragEnd);
+          this.el.removeEventListener('wheel', this.onWheel);
+        },
+
+        onWheel: function(evt) {
+          evt.preventDefault();
+          const scaleChange = evt.deltaY > 0 ? 0.95 : 1.05;
+          this.scale = Math.min(Math.max(this.scale * scaleChange, 0.5), 3.0);
+          this.el.object3D.scale.set(this.scale, this.scale, this.scale);
+        }
+      });
+
+      // Interaction manager for full solar system with clickable planets
+      AFRAME.registerComponent('interaction-manager', {
+        init: function () {
+          const sceneEl = this.el;
+          const raycaster = new THREE.Raycaster();
+          const mouse = new THREE.Vector2();
+
+          const findClickableEl = (intersect) => {
+            let obj = intersect.object;
+            while (obj) {
+              if (obj.el && obj.el.classList && obj.el.classList.contains('clickable')) return obj.el;
+              obj = obj.parent;
+            }
+            return null;
+          };
+
+          const setup = () => {
+            const canvas = sceneEl.canvas;
+            if (!canvas || !sceneEl.camera) return setTimeout(setup, 100);
+
+            function getPointer(e) {
+              return e.touches && e.touches.length ? e.touches[0] : e;
+            }
+
+            function computeMouse(ev) {
+              const rect = canvas.getBoundingClientRect();
+              mouse.x = ((ev.clientX - rect.left) / rect.width) * 2 - 1;
+              mouse.y = -((ev.clientY - rect.top) / rect.height) * 2 + 1;
+            }
+
+            function pointerDown(e) {
+              const p = getPointer(e);
+              computeMouse(p);
+              raycaster.setFromCamera(mouse, sceneEl.camera);
+              const intersects = raycaster.intersectObjects(sceneEl.object3D.children, true);
+              if (intersects.length === 0) return;
+              
+              const el = findClickableEl(intersects[0]);
+              if (!el) return;
+              
+              state.active = el;
+              state.lastX = p.clientX;
+              state.lastY = p.clientY;
+              
+              const rot = el.getAttribute('rotation') || {x:0, y:0, z:0};
+              state.startRot = {x: rot.x || 0, y: rot.y || 0, z: rot.z || 0};
+              
+              const scl = el.getAttribute('scale') || {x:1, y:1, z:1};
+              state.startScale = scl.x || 1;
+              state.currentScale = scl.x || 1;
+              state.isRotating = true;
+
+              if (e.touches && e.touches.length === 2) {
+                state.isZooming = true;
+                state.isRotating = false;
+                state.initialTouchDistance = Math.hypot(
+                  e.touches[0].clientX - e.touches[1].clientX,
+                  e.touches[0].clientY - e.touches[1].clientY
+                );
+              }
+              e.preventDefault && e.preventDefault();
+            }
+
+            function pointerMove(e) {
+              if (!state.active) return;
+              e.preventDefault();
+              const p = getPointer(e);
+
+              if (e.touches && e.touches.length === 2 && state.isZooming) {
+                const currentDist = Math.hypot(
+                  e.touches[0].clientX - e.touches[1].clientX,
+                  e.touches[0].clientY - e.touches[1].clientY
+                );
+                
+                const scaleFactor = currentDist / state.initialTouchDistance;
+                let newScale = state.startScale * scaleFactor;
+                newScale = Math.max(state.minScale, Math.min(state.maxScale, newScale));
+                state.currentScale = newScale;
+                
+                state.active.setAttribute('scale', `${newScale} ${newScale} ${newScale}`);
+                return;
+              }
+
+              if (state.isRotating) {
+                const dx = (p.clientX - state.lastX) * state.rotationSpeed;
+                const dy = (p.clientY - state.lastY) * state.rotationSpeed;
+                
+                const newRot = {
+                  x: state.startRot.x - dy,
+                  y: state.startRot.y + dx,
+                  z: state.startRot.z
+                };
+                
+                state.active.setAttribute('rotation', `${newRot.x} ${newRot.y} ${newRot.z}`);
+                state.lastX = p.clientX;
+                state.lastY = p.clientY;
+              }
+            }
+
+            function pointerUp() {
+              if (!state.active) return;
+              state.isRotating = false;
+              state.isZooming = false;
+              state.active = null;
+              state.initialTouchDistance = 0;
+            }
+
+            function wheel(e) {
+              e.preventDefault();
+              const target = state.active || document.getElementById('solarSystem');
+              if (target) {
+                const scale = target.getAttribute('scale') || {x:1};
+                let newScale = scale.x || 1;
+                
+                const zoomFactor = 0.05 * newScale;
+                newScale += e.deltaY < 0 ? zoomFactor : -zoomFactor;
+                
+                newScale = Math.max(
+                  target.id === 'solarSystem' ? 0.3 : state.minScale,
+                  Math.min(target.id === 'solarSystem' ? 4.0 : state.maxScale, newScale)
+                );
+                
+                target.setAttribute('scale', `${newScale} ${newScale} ${newScale}`);
+              }
+            }
+
+            canvas.addEventListener('mousedown', pointerDown);
+            canvas.addEventListener('touchstart', pointerDown, {passive:false});
+            window.addEventListener('mousemove', pointerMove);
+            window.addEventListener('touchmove', pointerMove, {passive:false});
+            window.addEventListener('mouseup', pointerUp);
+            window.addEventListener('touchend', pointerUp);
+            canvas.addEventListener('wheel', wheel, {passive:false});
+          };
+
+          setup();
+        }
+      });
+
+      } // Close initializeComponents function
+    </script>
+  </head>
+  <body>
+    <!-- Mission Control Panel -->
+    <div id="controls" class="cosmic-panel">
+      <h3>🚀 Mission Control</h3>
+      <div class="control-item">
+        <span class="control-icon">🖱️</span>
+        <span class="control-text">Drag to Rotate</span>
+        </div>
+      <div class="control-item">
+        <span class="control-icon">🔍</span>
+        <span class="control-text">Scroll to Zoom</span>
+        </div>
+      <div class="control-item">
+        <span class="control-icon">👆</span>
+        <span class="control-text">Click Planets for Info</span>
+      </div>
+      <div class="control-item">
+        <span class="control-icon">🎯</span>
+        <span class="control-text">Hover to Highlight</span>
+        </div>
+      <div class="control-item">
+        <span class="control-icon">📱</span>
+        <span class="control-text">Point at AR Marker</span>
+      </div>
+    </div>
+
+    <!-- Data Visualization Panel -->
+    <div id="dataPanel" class="cosmic-panel" style="position: absolute; top: 20px; left: 20px; width: 300px; display: none;">
+      <h3>📊 Planetary Data</h3>
+      <div id="planetStats">
+        <div class="stat-row">
+          <span class="stat-label">Temperature:</span>
+          <span class="stat-value" id="tempValue">--</span>
+      </div>
+        <div class="stat-row">
+          <span class="stat-label">Distance:</span>
+          <span class="stat-value" id="distanceValue">--</span>
+      </div>
+        <div class="stat-row">
+          <span class="stat-label">Orbital Speed:</span>
+          <span class="stat-value" id="speedValue">--</span>
+      </div>
+        <div class="stat-row">
+          <span class="stat-label">Gravity:</span>
+          <span class="stat-value" id="gravityValue">--</span>
+      </div>
+      </div>
+      </div>
+
+    <!-- Performance Monitor -->
+    <div id="performanceMonitor" style="position: absolute; bottom: 20px; left: 20px; background: rgba(0,0,0,0.8); color: #00ff00; padding: 10px; border-radius: 10px; font-family: 'Space Mono', monospace; font-size: 12px; display: none;">
+      <div>FPS: <span id="fpsCounter">60</span></div>
+      <div>Draw Calls: <span id="drawCalls">0</span></div>
+      <div>Triangles: <span id="triangles">0</span></div>
+      </div>
+
+    <div id="infoBox" class="cosmic-panel"></div>
+    <div id="soloInfoBox" class="cosmic-panel">
+      <h2 id="planetName"></h2>
+      <p id="planetInfo"></p>
+    </div>
+
+    <!-- WebGL Fallback -->
+    <div id="webglFallback" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.9); color: white; padding: 30px; border-radius: 20px; text-align: center; z-index: 10000;">
+      <h2>⚠️ WebGL Not Supported</h2>
+      <p>Your browser doesn't support WebGL, which is required for this AR experience.</p>
+      <p>Please try using a modern browser like Chrome, Firefox, or Safari.</p>
+    </div>
+
+    <!-- Camera Test -->
+    <div id="cameraTest" style="display: none; position: fixed; top: 10px; left: 10px; background: rgba(0,0,0,0.8); color: white; padding: 10px; border-radius: 10px; z-index: 10000;">
+      <h3>📷 Camera Test</h3>
+      <video id="testVideo" width="200" height="150" autoplay muted style="border-radius: 5px;"></video>
+    </div>
+
+    <a-scene 
+      embedded 
+      arjs='sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3; trackingMethod: best;'
+      vr-mode-ui="enabled: false"
+      loading-screen="enabled: false"
+      stats="false"
+      renderer="antialias: true; colorManagement: true; physicallyCorrectLights: true;"
+      shadow="type: pcfsoft"
+      interaction-manager>
+      <!-- Simplified neutral lighting -->
+      <a-entity light="type: ambient; color: #ffffff; intensity: 0.6"></a-entity>
+      <a-entity light="type: directional; color: #ffffff; intensity: 0.8" position="0 5 5"></a-entity>
+
+      <!-- Audio Assets -->
+      <a-assets>
+        <audio id="space-ambient" src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBjiE0fPTgjMGHm7A7+OZURE="></audio>
+        <audio id="planet-click" src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBjiE0fPTgjMGHm7A7+OZURE="></audio>
+      </a-assets>
+
+      <!-- Background Space Audio (disabled to reduce clutter) -->
+      <!-- <a-sound src="#space-ambient" autoplay="true" loop="true" volume="0.2"></a-sound> -->
+
+      <!-- FULL SOLAR SYSTEM (Hiro/Solar marker) -->
+      <a-marker type="pattern" url="markers/venus.patt">
+        <a-entity id="solarSystem" position="0 0 0" scale="1.5 1.5 1.5" rotation="0 0 0">
+          
+          <!-- Sun (clean, without extra effects) -->
+          <a-entity id="sunContainer" position="0 0.2 0">
+            <a-sphere id="sun" class="clickable"
+              radius="0.8"
+              segments-width="64"
+              segments-height="64"
+              material="src: url(texture/sun.jpg); roughness: 0.7; metalness: 0.1"
+              animation="property: rotation; to: 0 360 0; loop: true; dur: 25000"
+              planet-interaction>
+            </a-sphere>
+          </a-entity>
+
+          <!-- Asteroid belt (simplified) -->
+          <a-entity id="asteroidBelt" position="0 0.2 0"></a-entity>
+
+          <!-- Mercury (Orbit: 88 days -> ~6s) -->
+          <a-ring radius-inner="0.99" radius-outer="1.01" position="0 0.01 0" rotation="-90 0 0" color="#8888aa" opacity="0.35" material="side: double; transparent: true"></a-ring>
+          <a-entity animation="property: rotation; to: 0 360 0; loop: true; dur: 6000; easing: linear">
+            <a-sphere id="mercury" class="clickable"
+              position="1 0.2 0" radius="0.15"
+                segments-width="32"
+                segments-height="32"
+                material="src: url(texture/mercury.jpg); roughness: 0.8; metalness: 0.2"
+              animation="property: rotation; to: 0 360 0; loop: true; dur: 58000"
+              planet-interaction>
+              <!-- Ambient sound -->
+              <a-sound src="#space-ambient" autoplay="false" loop="true" volume="0.3" positional="true"></a-sound>
+              </a-sphere>
+          </a-entity>
+
+          <!-- Venus (225 days -> ~14.8s) -->
+          <a-ring radius-inner="1.49" radius-outer="1.51" position="0 0.01 0" rotation="-90 0 0" color="#8888aa" opacity="0.35" material="side: double; transparent: true"></a-ring>
+          <a-entity animation="property: rotation; to: 0 360 0; loop: true; dur: 14800; easing: linear">
+            <a-sphere id="venus" class="clickable"
+              position="1.5 0.2 0" radius="0.18"
+                segments-width="32"
+                segments-height="32"
+                material="src: url(texture/venus.jpg); roughness: 0.7; metalness: 0.1"
+              animation="property: rotation; to: 0 -360 0; loop: true; dur: 243000"
+              planet-interaction>
+              </a-sphere>
+          </a-entity>
+
+          <!-- Earth with Moon (365 days -> 24s) -->
+          <a-ring radius-inner="1.99" radius-outer="2.01" position="0 0.01 0" rotation="-90 0 0" color="#8888aa" opacity="0.35" material="side: double; transparent: true"></a-ring>
+          <a-entity animation="property: rotation; to: 0 360 0; loop: true; dur: 24000; easing: linear">
+            <a-sphere id="earth" class="clickable"
+              position="2 0.2 0" radius="0.2"
+                segments-width="32"
+                segments-height="32"
+                material="src: url(texture/earth.jpg); roughness: 0.5; metalness: 0.1"
+              animation="property: rotation; to: 0 360 0; loop: true; dur: 24000"
+              planet-interaction>
+              </a-sphere>
+              <!-- Moon orbit ring and moon -->
+              <a-ring radius-inner="0.39" radius-outer="0.41" position="2 0.05 0" rotation="-90 0 0" color="#ccccff" opacity="0.25" material="side: double; transparent: true"></a-ring>
+              <a-entity animation="property: rotation; to: 0 360 0; loop: true; dur: 5000; easing: linear">
+                <a-sphere id="moon" class="clickable"
+                  position="0.4 0 0" radius="0.06"
+                  segments-width="32" segments-height="32"
+                  material="src: url(texture/moon.jpg); roughness: 0.9"
+                  planet-interaction></a-sphere>
+              </a-entity>
+          </a-entity>
+
+          <!-- Mars (687 days -> ~45.2s) -->
+          <a-ring radius-inner="2.49" radius-outer="2.51" position="0 0.01 0" rotation="-90 0 0" color="#8888aa" opacity="0.35" material="side: double; transparent: true"></a-ring>
+          <a-entity animation="property: rotation; to: 0 360 0; loop: true; dur: 45200; easing: linear">
+            <a-sphere id="mars" class="clickable"
+              position="2.5 0.2 0" radius="0.15"
+                segments-width="32"
+                segments-height="32"
+                material="src: url(texture/mars.jpg); roughness: 0.8; metalness: 0.1"
+              animation="property: rotation; to: 0 360 0; loop: true; dur: 24500"
+              planet-interaction>
+              </a-sphere>
+          </a-entity>
+
+          <!-- Jupiter (4333 days -> ~285s) -->
+          <a-ring radius-inner="3.49" radius-outer="3.51" position="0 0.01 0" rotation="-90 0 0" color="#8888aa" opacity="0.35" material="side: double; transparent: true"></a-ring>
+          <a-entity animation="property: rotation; to: 0 360 0; loop: true; dur: 285000; easing: linear">
+            <a-sphere id="jupiter" class="clickable"
+              position="3.5 0.3 0" radius="0.45"
+                segments-width="64"
+                segments-height="64"
+                material="src: url(texture/jupiter.jpg); roughness: 0.6; metalness: 0.05"
+              animation="property: rotation; to: 0 360 0; loop: true; dur: 10000"
+              planet-interaction>
+              </a-sphere>
+          </a-entity>
+
+          <!-- Saturn (10759 days -> ~707s) -->
+          <a-ring radius-inner="4.49" radius-outer="4.51" position="0 0.01 0" rotation="-90 0 0" color="#8888aa" opacity="0.35" material="side: double; transparent: true"></a-ring>
+          <a-entity animation="property: rotation; to: 0 360 0; loop: true; dur: 707000; easing: linear">
+            <a-sphere id="saturn" class="clickable"
+              position="4.5 0.32 0" radius="0.4"
+                segments-width="64"
+                segments-height="64"
+                material="src: url(texture/saturn_map.jpg); roughness: 0.6; metalness: 0.05"
+              animation="property: rotation; to: 0 360 0; loop: true; dur: 10500"
+              planet-interaction>
+              </a-sphere>
+          </a-entity>
+
+          <!-- Uranus (30687 days -> ~2,016s) -->
+          <a-ring radius-inner="5.49" radius-outer="5.51" position="0 0.01 0" rotation="-90 0 0" color="#8888aa" opacity="0.35" material="side: double; transparent: true"></a-ring>
+          <a-entity animation="property: rotation; to: 0 360 0; loop: true; dur: 2016000; easing: linear">
+            <a-sphere id="uranus" class="clickable"
+              position="5.5 0.3 0" radius="0.25"
+                segments-width="32"
+                segments-height="32"
+                material="src: url(texture/uranus.jpg); roughness: 0.7; metalness: 0.1"
+              animation="property: rotation; to: 0 360 0; loop: true; dur: 17000"
+              planet-interaction>
+              </a-sphere>
+          </a-entity>
+
+          <!-- Neptune (60190 days -> ~3,955s) -->
+          <a-ring radius-inner="6.49" radius-outer="6.51" position="0 0.01 0" rotation="-90 0 0" color="#8888aa" opacity="0.35" material="side: double; transparent: true"></a-ring>
+          <a-entity animation="property: rotation; to: 0 360 0; loop: true; dur: 3955000; easing: linear">
+            <a-sphere id="neptune" class="clickable"
+              position="6.5 0.3 0" radius="0.24"
+                segments-width="32"
+                segments-height="32"
+                material="src: url(texture/neptune.jpg); roughness: 0.7; metalness: 0.1"
+              animation="property: rotation; to: 0 360 0; loop: true; dur: 16000"
+              planet-interaction>
+              </a-sphere>
+          </a-entity>
+
+        </a-entity>
+      </a-marker>
+
+      
+
+      <a-entity camera look-controls="enabled: true">
+        <a-cursor
+          id="cursor"
+          raycaster="objects: .clickable"
+          geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
+          material="color: white; shader: flat"
+          animation__click="property: scale; startEvents: click; to: 0.1 0.1 0.1; dur: 150"
+          animation__clickreset="property: scale; startEvents: animationcomplete__click; to: 1 1 1; dur: 150"
+          animation__fusing="property: scale; startEvents: fusing; to: 0.1 0.1 0.1; dur: 1500; easing: easeInCubic"
+          animation__mouseleave="property: scale; startEvents: mouseleave; to: 1 1 1; dur: 150"
+          position="0 0 -1"
+          geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
+          material="color: white; shader: flat; opacity: 0.75">
+        </a-cursor>
+      </a-entity>
+    </a-scene>
+
+    <script>
+      const infoBox = document.getElementById('infoBox');
+      const soloInfoBox = document.getElementById('soloInfoBox');
+      const planetName = document.getElementById('planetName');
+      const planetInfo = document.getElementById('planetInfo');
+
+      const planets = {
+        sun: "☀️ Sun: The star at the center of our Solar System. Contains 99.8% of the Solar System's total mass.",
+        mercury: "☿️ Mercury: The closest planet to the Sun. A year on Mercury is only 88 Earth days long.",
+        venus: "♀️ Venus: The hottest planet in the Solar System with a runaway greenhouse effect.",
+        earth: "🌍 Earth: The only known planet with life. About 71% of its surface is covered by water.",
+        moon: "🌙 Moon: Earth's natural satellite. The same side always faces Earth due to tidal locking.",
+        mars: "♂️ Mars: Known as the Red Planet. Home to Olympus Mons, the tallest volcano in the Solar System.",
+        jupiter: "♃ Jupiter: The largest planet. Its Great Red Spot is a storm that's raged for 300+ years.",
+        saturn: "♄ Saturn: Famous for its icy rings. Could float in water due to its low density.",
+        uranus: "♅ Uranus: A tilted blue-green planet with seasons lasting over 20 years each.",
+        neptune: "♆ Neptune: A windy ice giant with winds reaching up to 2,100 km/h."
+      };
+
+      function speak(text) {
+        if ('speechSynthesis' in window) {
+          speechSynthesis.cancel();
+          const utter = new SpeechSynthesisUtterance(text);
+          utter.lang = 'en-US';
+          utter.rate = 0.9;
+          speechSynthesis.speak(utter);
+        }
+      }
+
+      // Enhanced click handling with cursor events
+      document.querySelectorAll(".clickable").forEach(sphere => {
+        // Add hover effects
+        sphere.addEventListener('mouseenter', function() {
+            this.setAttribute('scale', '1.2 1.2 1.2');
+          this.setAttribute('material', 'emissive: #ffffff; emissiveIntensity: 0.3');
+          });
+
+        sphere.addEventListener('mouseleave', function() {
+            this.setAttribute('scale', '1 1 1');
+          this.setAttribute('material', 'emissive: #000000; emissiveIntensity: 0');
+        });
+
+        // Enhanced click handling
+        sphere.addEventListener("click", (event) => {
+          const text = planets[sphere.id];
+          if (text) {
+            // Hide other info boxes
+            infoBox.style.display = "none";
+            soloInfoBox.style.display = "none";
+            
+            // Show info with enhanced styling
+            showPlanetInfo(sphere.id, text);
+            speak(text);
+          }
+          });
+        });
+
+      // Enhanced planetary data
+      const planetData = {
+        sun: { temp: "5,778K", distance: "0 AU", speed: "0 km/h", gravity: "274 m/s²" },
+        mercury: { temp: "427°C", distance: "0.39 AU", speed: "170,503 km/h", gravity: "3.7 m/s²" },
+        venus: { temp: "462°C", distance: "0.72 AU", speed: "126,077 km/h", gravity: "8.87 m/s²" },
+        earth: { temp: "15°C", distance: "1.0 AU", speed: "107,244 km/h", gravity: "9.81 m/s²" },
+        moon: { temp: "-173°C", distance: "384,400 km", speed: "3,683 km/h", gravity: "1.62 m/s²" },
+        mars: { temp: "-63°C", distance: "1.52 AU", speed: "86,677 km/h", gravity: "3.71 m/s²" },
+        jupiter: { temp: "-108°C", distance: "5.20 AU", speed: "47,002 km/h", gravity: "24.79 m/s²" },
+        saturn: { temp: "-139°C", distance: "9.58 AU", speed: "34,821 km/h", gravity: "10.44 m/s²" },
+        uranus: { temp: "-197°C", distance: "19.22 AU", speed: "24,477 km/h", gravity: "8.69 m/s²" },
+        neptune: { temp: "-201°C", distance: "30.05 AU", speed: "19,566 km/h", gravity: "11.15 m/s²" }
+      };
+
+      function showPlanetInfo(planetId, text) {
+        const planetName = document.getElementById('planetName');
+        const planetInfo = document.getElementById('planetInfo');
+        
+        // Extract planet name and info
+        const parts = text.split(':');
+        const name = parts[0] ? parts[0].trim() : planetId.charAt(0).toUpperCase() + planetId.slice(1);
+        const info = parts[1] ? parts[1].trim() : text;
+        
+        planetName.textContent = name;
+        planetInfo.textContent = info;
+        
+        // Show data panel with real-time stats
+        updateDataPanel(planetId);
+        
+        // Play click sound
+        const clickSound = document.querySelector('#planet-click');
+        if (clickSound) {
+          clickSound.currentTime = 0;
+          clickSound.play();
+        }
+        
+        // Show with animation
+        soloInfoBox.style.display = "block";
+        soloInfoBox.style.opacity = "0";
+        soloInfoBox.style.transform = "translateX(-50%) translateY(50px)";
+        
+        // Animate in
+        setTimeout(() => {
+          soloInfoBox.style.opacity = "1";
+          soloInfoBox.style.transform = "translateX(-50%) translateY(0)";
+          soloInfoBox.style.transition = "all 0.5s ease-out";
+        }, 100);
+      }
+
+      function updateDataPanel(planetId) {
+        const data = planetData[planetId];
+        if (data) {
+          document.getElementById('tempValue').textContent = data.temp;
+          document.getElementById('distanceValue').textContent = data.distance;
+          document.getElementById('speedValue').textContent = data.speed;
+          document.getElementById('gravityValue').textContent = data.gravity;
+          document.getElementById('dataPanel').style.display = 'block';
+        }
+      }
+
+      document.addEventListener('click', (e) => {
+        if (!e.target.classList.contains('clickable')) {
+          infoBox.style.display = 'none';
+        }
+      });
+
+      AFRAME.registerComponent("planet", {
+        schema: { name: {type:"string"}, info: {type:"string"} },
+        init: function () {
+          const el = this.el;
+          const data = this.data;
+
+          el.addEventListener("markerFound", () => {
+            planetName.textContent = data.name;
+            planetInfo.textContent = data.info;
+            soloInfoBox.style.display = "block";
+            infoBox.style.display = "none";
+            speak(data.name + ". " + data.info);
+          });
+
+          el.addEventListener("markerLost", () => {
+            soloInfoBox.style.display = "none";
+            if ('speechSynthesis' in window) speechSynthesis.cancel();
+          });
+        }
+      });
+
+      // Performance monitoring
+      function initPerformanceMonitor() {
+        const scene = document.querySelector('a-scene');
+        if (scene && scene.renderer) {
+          let lastTime = performance.now();
+          let frameCount = 0;
+          
+          function updateStats() {
+            frameCount++;
+            const currentTime = performance.now();
+            
+            if (currentTime - lastTime >= 1000) {
+              const fps = Math.round((frameCount * 1000) / (currentTime - lastTime));
+              document.getElementById('fpsCounter').textContent = fps;
+              
+              if (scene.renderer.info) {
+                document.getElementById('drawCalls').textContent = scene.renderer.info.render.calls;
+                document.getElementById('triangles').textContent = scene.renderer.info.render.triangles;
+              }
+              
+              frameCount = 0;
+              lastTime = currentTime;
+            }
+            
+            requestAnimationFrame(updateStats);
+          }
+          
+          updateStats();
+        }
+      }
+
+      // Gesture controls
+      function initGestureControls() {
+        let isGesturing = false;
+        let gestureStartTime = 0;
+        
+        // Tap gesture detection
+      document.addEventListener('touchstart', function(e) {
+          if (e.touches.length === 1) {
+            gestureStartTime = Date.now();
+            isGesturing = true;
+          }
+        });
+        
+        document.addEventListener('touchend', function(e) {
+          if (isGesturing && Date.now() - gestureStartTime < 300) {
+            // Single tap - toggle performance monitor
+            const perfMonitor = document.getElementById('performanceMonitor');
+            perfMonitor.style.display = perfMonitor.style.display === 'none' ? 'block' : 'none';
+          }
+          isGesturing = false;
+        });
+        
+        // Double tap gesture
+        let tapCount = 0;
+        document.addEventListener('touchend', function(e) {
+          tapCount++;
+          setTimeout(() => {
+            if (tapCount === 2) {
+              // Double tap - reset view
+              const solarSystem = document.getElementById('solarSystem');
+              if (solarSystem) {
+                solarSystem.setAttribute('scale', '1.5 1.5 1.5');
+                solarSystem.setAttribute('rotation', '0 0 0');
+              }
+            }
+            tapCount = 0;
+          }, 300);
+        });
+      }
+
+      // Scene ready handler
+      document.addEventListener('DOMContentLoaded', function() {
+        const scene = document.querySelector('a-scene');
+        if (scene) {
+          scene.addEventListener('loaded', function() {
+            console.log('✅ A-Frame scene loaded successfully');
+            
+            // Initialize advanced features
+            initPerformanceMonitor();
+            initGestureControls();
+            
+            // Check camera permissions and test
+            navigator.mediaDevices.getUserMedia({ video: true })
+              .then(function(stream) {
+                console.log('✅ Camera access granted');
+                
+                // Show camera test
+                const testVideo = document.getElementById('testVideo');
+                const cameraTest = document.getElementById('cameraTest');
+                testVideo.srcObject = stream;
+                cameraTest.style.display = 'block';
+                
+                // Hide test after 3 seconds
+        setTimeout(() => {
+                  cameraTest.style.display = 'none';
+                  stream.getTracks().forEach(track => track.stop());
+                }, 3000);
+              })
+              .catch(function(err) {
+                console.error('❌ Camera access denied:', err);
+                alert('Camera access is required for AR. Please allow camera permissions and refresh the page.');
+              });
+          });
+          
+          scene.addEventListener('error', function(e) {
+            console.error('❌ A-Frame scene error:', e);
+          });
+        }
+      });
+    </script>
+  </body>
+</html>

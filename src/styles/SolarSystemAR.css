@@ -1,0 +1,577 @@
+/* SolarSystemAR.css */
+/* Enhanced User-Friendly Styling */
+
+/* Main Container */
+.solar-system-container {
+  background: linear-gradient(180deg, #1a0a47 0%, #0a1b3d 100%);
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Canvas */
+.canvas-full {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Controls Panel */
+.control-panel {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border-radius: 20px !important;
+  border: 3px solid #ffd700 !important;
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.control-flex-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.control-flex-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.control-items-center {
+  display: flex;
+  align-items: center;
+}
+
+.control-panel-title {
+  color: #2b0955 !important;
+  font-family: 'Bubblegum Sans', cursive !important;
+  text-shadow: 1px 1px 0px white;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+/* Buttons */
+.space-button {
+  font-family: 'Comic Neue', cursive !important;
+  border-radius: 15px !important;
+  transition: all 0.3s ease !important;
+  border: 2px solid !important;
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+}
+
+.space-button .button-icon {
+  margin-right: 0.5rem;
+}
+
+.control-range {
+  width: 100%;
+}
+
+.control-text-sm {
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.planet-info-list {
+  list-style-type: disc;
+  padding-left: 1.25rem;
+  font-size: 0.875rem;
+}
+
+.planet-info-list li {
+  margin-bottom: 0.25rem;
+}
+
+.planet-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.space-button:hover {
+  transform: scale(1.05) !important;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.5) !important;
+}
+
+.blue-button {
+  background: #4287f5 !important;
+  border-color: #2b5cb6 !important;
+  color: white !important;
+}
+
+.purple-button {
+  background: #a85cf9 !important;
+  border-color: #7b2cbf !important;
+  color: white !important;
+}
+
+/* Planet Info Card */
+.planet-info {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border-radius: 20px !important;
+  border: 3px solid #ff6b6b !important;
+  font-family: 'Bubblegum Sans', cursive !important;
+  color: #2b0955 !important;
+  box-shadow: 0 0 25px rgba(255, 107, 107, 0.3);
+}
+
+.planet-info h2 {
+  color: #e91e63 !important;
+  text-shadow: 1px 1px 0px white;
+}
+
+/* Slider */
+input[type="range"] {
+  background: #ffd700;
+  height: 10px;
+  border-radius: 5px;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 25px;
+  height: 25px;
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23ffffff"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>');
+  background-color: #4287f5;
+  background-repeat: no-repeat;
+  background-position: center;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+/* Instructional Overlay */
+.instruction-box {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 3px solid #4caf50 !important;
+  border-radius: 20px !important;
+  font-family: 'Bubblegum Sans', cursive !important;
+  color: #2b0955 !important;
+}
+
+/* Rocket Controls */
+.rocket-controls {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 3px solid #ff5722 !important;
+  border-radius: 20px !important;
+}
+
+/* Animations */
+
+
+
+/* Header Controls */
+.header-controls {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  padding: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Planet Navigation */
+.planet-nav {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 15px;
+  padding: 1rem;
+  border: 3px solid #ffd700;
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+  max-width: 200px;
+}
+
+/* Status Bar */
+.status-bar {
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+}
+
+/* Tutorial Modal */
+.tutorial-overlay {
+  z-index: 1000;
+}
+
+.tutorial-modal {
+  border: 3px solid #ffd700;
+  box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+/* Enhanced Planet Info */
+.planet-info {
+  max-height: 80vh;
+  overflow-y: auto;
+  backdrop-filter: blur(10px);
+  border: 3px solid #ff6b6b !important;
+  box-shadow: 0 0 25px rgba(255, 107, 107, 0.4);
+}
+
+.planet-description {
+  scrollbar-width: thin;
+  scrollbar-color: #ffd700 transparent;
+}
+
+.planet-description::-webkit-scrollbar {
+  width: 6px;
+}
+
+.planet-description::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+}
+
+.planet-description::-webkit-scrollbar-thumb {
+  background: #ffd700;
+  border-radius: 3px;
+}
+
+/* Navigation Buttons */
+.nav-button {
+  font-size: 0.75rem;
+  padding: 0.5rem 0.75rem;
+}
+
+/* Close Button */
+.close-button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.close-button:hover {
+  background: rgba(0, 0, 0, 0.1);
+  transform: scale(1.1);
+}
+
+/* Enhanced Grid Layouts */
+.grid {
+  display: grid;
+}
+
+.grid-cols-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.gap-2 {
+  gap: 0.5rem;
+}
+
+.gap-4 {
+  gap: 1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .header-controls {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 0.75rem;
+  }
+  
+  .control-panel {
+    top: 0.5rem;
+    right: 0.5rem;
+    padding: 0.75rem;
+    max-width: calc(100vw - 1rem);
+  }
+  
+  .planet-nav {
+    top: 4rem;
+    left: 0.5rem;
+    max-width: calc(100vw - 1rem);
+  }
+  
+  .rocket-controls {
+    bottom: 0.5rem;
+    right: 0.5rem;
+    padding: 0.75rem;
+  }
+  
+  .planet-info {
+    right: 0.5rem;
+    max-width: calc(100vw - 1rem);
+  }
+  
+  .status-bar {
+    bottom: 0.5rem;
+    left: 0.5rem;
+    right: auto;
+    width: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .grid-cols-2 {
+    grid-template-columns: 1fr;
+  }
+  
+  .planet-nav .grid-cols-2 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .tutorial-modal {
+    margin: 1rem;
+    padding: 1rem;
+  }
+}
+
+/* Animation Enhancements */
+.space-button {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.space-button:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.space-button:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Loading States */
+.space-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Focus States for Accessibility */
+.space-button:focus {
+  outline: 2px solid #ffd700;
+  outline-offset: 2px;
+}
+
+/* Mobile-specific styles */
+.mobile-menu-toggle {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.mobile-control-panel {
+  position: fixed !important;
+  top: 80px !important;
+  right: 10px !important;
+  left: auto !important;
+  max-width: 300px !important;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+  background: rgba(255, 255, 255, 0.98) !important;
+  z-index: 40;
+}
+
+.mobile-panel {
+  background: rgba(255, 255, 255, 0.98) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+}
+
+/* Touch-friendly button sizes */
+@media (max-width: 768px) {
+  .space-button {
+    min-height: 44px;
+    min-width: 44px;
+    font-size: 0.875rem;
+  }
+  
+  .control-panel {
+    font-size: 0.875rem;
+  }
+  
+  .planet-info {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 90% !important;
+    max-width: 400px !important;
+    max-height: 80vh !important;
+    z-index: 60;
+  }
+  
+  .rocket-controls {
+    position: fixed !important;
+    max-width: 280px !important;
+  }
+  
+  .status-bar {
+    font-size: 0.75rem !important;
+    padding: 0.5rem !important;
+  }
+}
+
+/* Improved touch targets */
+@media (pointer: coarse) {
+  .space-button {
+    padding: 0.75rem 1rem;
+  }
+  
+  input[type="range"] {
+    height: 20px;
+  }
+  
+  input[type="range"]::-webkit-slider-thumb {
+    width: 35px;
+    height: 35px;
+  }
+}
+
+/* Landscape mobile optimization */
+@media (max-width: 768px) and (orientation: landscape) {
+  .mobile-control-panel {
+    top: 10px !important;
+    max-height: calc(100vh - 20px);
+  }
+  
+  .planet-nav {
+    display: none;
+  }
+  
+  .planet-info {
+    max-height: 90vh !important;
+  }
+}
+
+/* Add these font imports in your HTML head */
+/* <link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&family=Comic+Neue:wght@700&display=swap" rel="stylesheet"> */
+
+/* Enhanced Responsive Design */
+@media (max-width: 1200px) {
+  .control-panel {
+    max-width: 350px;
+  }
+  
+  .planet-nav {
+    max-width: 180px;
+  }
+}
+
+@media (max-width: 992px) {
+  .control-panel {
+    max-width: 320px;
+    font-size: 0.9rem;
+  }
+  
+  .space-button {
+    font-size: 0.85rem;
+    padding: 0.5rem 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Small Mobile */
+  .solar-system-container {
+    padding: 0;
+  }
+  
+  .header-controls {
+    padding: 0.5rem;
+  }
+  
+  .header-controls h1 {
+    font-size: 1.2rem;
+  }
+  
+  .control-panel {
+    font-size: 0.8rem;
+    padding: 0.5rem;
+  }
+  
+  .control-panel-title {
+    font-size: 0.9rem;
+  }
+  
+  .space-button {
+    font-size: 0.75rem;
+    padding: 0.4rem 0.6rem;
+    min-height: 36px;
+  }
+  
+  .planet-info {
+    padding: 1rem;
+  }
+  
+  .planet-info h3 {
+    font-size: 1.2rem;
+  }
+  
+  .planet-info p {
+    font-size: 0.85rem;
+  }
+  
+  .rocket-controls {
+    padding: 0.5rem;
+    max-width: 250px;
+  }
+  
+  .status-bar {
+    font-size: 0.7rem;
+    padding: 0.4rem;
+  }
+}
+
+/* Touch Device Enhancements */
+@media (pointer: coarse) {
+  .space-button,
+  .nav-button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  .close-button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  
+  input[type="range"] {
+    min-height: 30px;
+  }
+  
+  input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+/* High DPI Screens */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .control-panel,
+  .planet-info {
+    border-width: 2px;
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .control-panel,
+  .planet-info {
+    background: rgba(20, 20, 30, 0.95);
+  }
+  
+  .space-button {
+    background: rgba(100, 100, 255, 0.3);
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

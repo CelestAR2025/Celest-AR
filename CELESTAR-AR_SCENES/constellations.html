@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Constellation AR Explorer</title>
+  <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+  <style>
+    body, html { 
+      margin: 0; 
+      padding: 0; 
+      overflow: hidden;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    /* Welcome overlay */
+    #welcomeOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e22ce 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 30000;
+      animation: fadeIn 0.5s ease-in;
+    }
+    
+    #welcomeOverlay.hidden {
+      display: none;
+    }
+    
+    .welcome-content {
+      text-align: center;
+      color: white;
+      padding: 30px;
+      max-width: 500px;
+    }
+    
+    .welcome-content h1 {
+      font-size: 2.5em;
+      margin-bottom: 15px;
+      text-shadow: 0 0 20px rgba(255,255,255,0.5);
+    }
+    
+    .welcome-content p {
+      font-size: 1.1em;
+      margin-bottom: 25px;
+      opacity: 0.9;
+    }
+    
+    .start-btn {
+      background: linear-gradient(45deg, #f59e0b, #ef4444);
+      border: none;
+      color: white;
+      padding: 15px 40px;
+      font-size: 1.2em;
+      border-radius: 30px;
+      cursor: pointer;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+      transition: all 0.3s ease;
+    }
+    
+    .start-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 7px 25px rgba(0,0,0,0.4);
+    }
+    
+    /* Top status bar */
+    #statusBar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 100%);
+      padding: 12px 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 25000;
+      color: white;
+      font-size: 14px;
+    }
+    
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .pulse-dot {
+      width: 10px;
+      height: 10px;
+      background: #ef4444;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    
+    .pulse-dot.active {
+      background: #22c55e;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.2); }
+    }
+    
+    /* Info boxes with enhanced design */
+    .info-box {
+      position: absolute;
+      right: 15px;
+      bottom: 15px;
+      background: linear-gradient(135deg, rgba(30, 60, 114, 0.95) 0%, rgba(42, 82, 152, 0.95) 100%);
+      color: #fff;
+      padding: 20px;
+      border-radius: 15px;
+      width: 340px;
+      max-height: 50vh;
+      overflow-y: auto;
+      z-index: 20000;
+      display: none;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.1);
+      animation: slideInRight 0.4s ease-out;
+    }
+    
+    @keyframes slideInRight {
+      from { transform: translateX(400px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    .info-box.show {
+      display: block;
+    }
+    
+    .info-box h3 {
+      margin: 0 0 15px 0;
+      font-size: 20px;
+      border-bottom: 2px solid rgba(255,255,255,0.3);
+      padding-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .constellation-icon {
+      font-size: 24px;
+    }
+    
+    .info-box p {
+      margin: 0 0 12px 0;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    
+    .info-box ul {
+      margin: 12px 0 0 0;
+      padding: 0;
+      list-style: none;
+    }
+    
+    .info-box li {
+      margin-bottom: 12px;
+      padding: 12px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 8px;
+      line-height: 1.5;
+      transition: all 0.3s ease;
+      animation: fadeInUp 0.5s ease-out backwards;
+    }
+    
+    .info-box li:hover {
+      background: rgba(255,255,255,0.15);
+      transform: translateX(5px);
+    }
+    
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .info-box li:nth-child(1) { animation-delay: 0.1s; }
+    .info-box li:nth-child(2) { animation-delay: 0.2s; }
+    .info-box li:nth-child(3) { animation-delay: 0.3s; }
+    .info-box li:nth-child(4) { animation-delay: 0.4s; }
+    .info-box li:nth-child(5) { animation-delay: 0.5s; }
+    .info-box li:nth-child(6) { animation-delay: 0.6s; }
+    .info-box li:nth-child(7) { animation-delay: 0.7s; }
+    
+    .star-name {
+      color: #fbbf24;
+      font-weight: bold;
+      font-size: 15px;
+    }
+    
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid rgba(255,255,255,0.2);
+    }
+    
+    .btn {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    
+    .btn-show-stars {
+      background: linear-gradient(45deg, #f59e0b, #ef4444);
+      color: white;
+    }
+    
+    .btn-show-stars:hover {
+      transform: scale(1.05);
+      box-shadow: 0 5px 15px rgba(245, 158, 11, 0.4);
+    }
+    
+    .btn-speak {
+      background: linear-gradient(45deg, #8b5cf6, #6366f1);
+      color: white;
+    }
+    
+    .btn-speak:hover {
+      transform: scale(1.05);
+      box-shadow: 0 5px 15px rgba(139, 92, 246, 0.4);
+    }
+    
+    .btn-close {
+      background: rgba(255,255,255,0.2);
+      color: white;
+    }
+    
+    .btn-close:hover {
+      background: rgba(255,255,255,0.3);
+    }
+    
+    /* Instructions panel */
+    #instructions {
+      position: absolute;
+      bottom: 15px;
+      left: 15px;
+      background: rgba(0,0,0,0.85);
+      color: white;
+      padding: 15px 20px;
+      border-radius: 12px;
+      max-width: 280px;
+      z-index: 20000;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    #instructions h4 {
+      margin: 0 0 10px 0;
+      font-size: 16px;
+      color: #fbbf24;
+    }
+    
+    #instructions ul {
+      margin: 0;
+      padding-left: 20px;
+      font-size: 13px;
+      line-height: 1.8;
+    }
+    
+    /* Loading spinner */
+    .spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Scrollbar styling */
+    .info-box::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    .info-box::-webkit-scrollbar-track {
+      background: rgba(255,255,255,0.05);
+      border-radius: 10px;
+    }
+    
+    .info-box::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.3);
+      border-radius: 10px;
+    }
+    
+    .info-box::-webkit-scrollbar-thumb:hover {
+      background: rgba(255,255,255,0.5);
+    }
+    
+    /* Fun facts section */
+    .fun-fact {
+      background: linear-gradient(45deg, rgba(251, 191, 36, 0.2), rgba(245, 158, 11, 0.2));
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 12px;
+      border-left: 3px solid #fbbf24;
+    }
+    
+    .fun-fact-label {
+      color: #fbbf24;
+      font-weight: bold;
+      font-size: 13px;
+      margin-bottom: 5px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Welcome Overlay -->
+  <div id="welcomeOverlay">
+    <div class="welcome-content">
+      <h1>✨ Constellation Explorer ✨</h1>
+      <p>Point your camera at the AR marker to discover the wonders of the night sky. Tap on constellations to learn about their stars!</p>
+      <button class="start-btn" onclick="startExperience()">Start Exploring</button>
+    </div>
+  </div>
+
+  <!-- Status Bar -->
+  <div id="statusBar">
+    <div class="status-indicator">
+      <div class="pulse-dot" id="markerStatus"></div>
+      <span id="statusText">Searching for markers...</span>
+    </div>
+    <div id="constellationCount">🌟 0 discovered</div>
+  </div>
+
+  <!-- A-Frame Scene -->
+  <a-scene embedded 
+           arjs="trackingMethod: best; 
+                 sourceType: webcam; 
+                 debugUIEnabled: false; 
+                 patternRatio: 0.75;
+                 detectionMode: mono_and_matrix;
+                 matrixCodeType: 3x3;">
+    <!-- Big Dipper Marker -->
+    <a-marker type="pattern" 
+             url="markers/venus.patt"
+             smooth="true" 
+             smoothCount="5"
+             smoothTolerance="0.01" 
+             smoothThreshold="2">
+      <a-plane id="bigdipper"
+               src="models/constellations/bigdipper.png"
+               position="0 0 0"
+               rotation="-90 0 0"
+               width="2.2" height="2.2"
+               material="transparent: true; opacity: 1"
+               animation="property: scale; to: 1 1 1; dur: 300; easing: easeOutQuad">
+      </a-plane>
+    </a-marker>
+
+    <!-- Little Dipper Marker -->
+    <a-marker type="pattern" 
+             url="Constellations/pattern/pattern-littledipper.patt"
+             smooth="true" 
+             smoothCount="5"
+             smoothTolerance="0.01" 
+             smoothThreshold="2">
+      <a-plane id="littledipper"
+               src="models/Constellations/25.png"
+               position="0 0 0"
+               rotation="-90 0 0"
+               width="2.2" height="2.2"
+               material="transparent: true; opacity: 1"
+               animation="property: scale; to: 1 1 1; dur: 300; easing: easeOutQuad">
+      </a-plane>
+    </a-marker>
+
+    <!-- Orion Marker -->
+    <a-marker type="pattern" 
+             url="Constellations/pattern/pattern-orion.patt"
+             smooth="true" 
+             smoothCount="5"
+             smoothTolerance="0.01" 
+             smoothThreshold="2">
+      <a-plane id="orion"
+               src="models/Constellations/25.png"
+               position="0 0 0"
+               rotation="-90 0 0"
+               width="2.2" height="2.2"
+               material="transparent: true; opacity: 1"
+               animation="property: scale; to: 1 1 1; dur: 300; easing: easeOutQuad">
+      </a-plane>
+    </a-marker>
+
+    
+    <a-entity camera></a-entity>
+  </a-scene>
+
+  <!-- Instructions -->
+  <div id="instructions">
+    <h4>📱 How to Use</h4>
+    <ul>
+      <li>Point camera at marker</li>
+      <li>Tap constellation to reveal stars</li>
+      <li>Click 🔊 to hear details</li>
+    </ul>
+  </div>
+
+  <!-- Big Dipper Info Box -->
+  <div id="infoBox" class="info-box">
+    <h3>
+      <span class="constellation-icon">🌌</span>
+      <span>Big Dipper</span>
+    </h3>
+    <p id="infoText"></p>
+    <div class="button-group">
+      <button id="showStarsBtn" class="btn btn-show-stars">⭐ Show Star Names</button>
+      <button id="speakBtn" class="btn btn-speak">🔊 Speak</button>
+      <button id="stopSpeak" class="btn btn-close">⏹ Stop</button>
+      <button id="closeInfo" class="btn btn-close">Close</button>
+    </div>
+  </div>
+
+  <!-- Little Dipper Info Box -->
+  <div id="infoBoxLittle" class="info-box">
+    <h3>
+      <span class="constellation-icon">⭐</span>
+      <span>Little Dipper</span>
+    </h3>
+    <p id="infoTextLittle"></p>
+    <div class="button-group">
+      <button id="showStarsBtnLittle" class="btn btn-show-stars">⭐ Show Star Names</button>
+      <button id="speakBtnLittle" class="btn btn-speak">🔊 Speak</button>
+      <button id="stopSpeakLittle" class="btn btn-close">⏹ Stop</button>
+      <button id="closeInfoLittle" class="btn btn-close">Close</button>
+    </div>
+  </div>
+
+  <script>
+    const synth = window.speechSynthesis;
+    let discoveredConstellations = new Set();
+    
+    // Welcome screen
+    function startExperience() {
+      document.getElementById('welcomeOverlay').classList.add('hidden');
+      speak('Welcome to Constellation Explorer. Point your camera at a marker to begin your journey through the stars.');
+    }
+
+    // Star data with enhanced information
+    const stars = [
+      { 
+        name: 'Dubhe', 
+        note: 'Alpha Ursae Majoris, a brilliant yellow-orange giant star. One of the two pointer stars that guide you to Polaris.',
+        fact: 'Dubhe is 123 light-years away and is 300 times more luminous than our Sun!'
+      },
+      { 
+        name: 'Merak', 
+        note: 'Beta Ursae Majoris, a blue-white subgiant star that forms the second pointer star.',
+        fact: 'Merak means "the loins" in Arabic, referring to the bear\'s body.'
+      },
+      { 
+        name: 'Phecda', 
+        note: 'Gamma Ursae Majoris, located at the base of the bowl. A white main-sequence star.',
+        fact: 'Its name comes from the Arabic phrase meaning "thigh of the bear".'
+      },
+      { 
+        name: 'Megrez', 
+        note: 'Delta Ursae Majoris, the faintest star in the Big Dipper, connecting bowl to handle.',
+        fact: 'Despite being the dimmest, Megrez is still 14 times brighter than our Sun!'
+      },
+      { 
+        name: 'Alioth', 
+        note: 'Epsilon Ursae Majoris, the brightest star in the Big Dipper and Ursa Major.',
+        fact: 'Alioth is a chemically peculiar star with unusual amounts of certain elements.'
+      },
+      { 
+        name: 'Mizar & Alcor', 
+        note: 'Zeta Ursae Majoris and its optical companion, forming a famous double star system visible to the naked eye.',
+        fact: 'Ancient peoples used this pair as an eyesight test. Can you see both stars?'
+      },
+      { 
+        name: 'Alkaid', 
+        note: 'Eta Ursae Majoris, marking the tip of the handle. A hot, blue-white star.',
+        fact: 'Alkaid is not gravitationally bound to the other Big Dipper stars!'
+      }
+    ];
+
+    const littleStars = [
+      { 
+        name: 'Polaris', 
+        note: 'Alpha Ursae Minoris, the North Star at the handle tip, used for navigation for millennia.',
+        fact: 'Polaris is actually a triple star system, located about 430 light-years away.'
+      },
+      { 
+        name: 'Kochab', 
+        note: 'Beta Ursae Minoris, an orange giant star that was the pole star around 1100 BC.',
+        fact: 'Kochab is 130 times brighter than our Sun!'
+      },
+      { 
+        name: 'Pherkad', 
+        note: 'Gamma Ursae Minoris, another bright star in the bowl, paired with Kochab as the "Guardians of the Pole".',
+        fact: 'Together with Kochab, these stars never set for observers in mid-northern latitudes.'
+      }
+    ];
+
+    // Update constellation count
+    function updateConstellationCount() {
+      document.getElementById('constellationCount').textContent = `🌟 ${discoveredConstellations.size} discovered`;
+    }
+
+    // Update status
+    function updateStatus(found, text) {
+      const dot = document.getElementById('markerStatus');
+      const statusText = document.getElementById('statusText');
+      if (found) {
+        dot.classList.add('active');
+        statusText.textContent = text;
+      } else {
+        dot.classList.remove('active');
+        statusText.textContent = 'Searching for markers...';
+      }
+    }
+
+    // Track which constellation's info is currently showing
+    let currentConstellation = null;
+
+    // Big Dipper marker detection
+    window.addEventListener('load', () => {
+      const marker = document.querySelector('a-marker[type="pattern"]');
+      let markerVisible = false;
+      let stabilityTimeout;
+
+      marker.addEventListener('markerFound', () => {
+        if (!markerVisible) {
+          markerVisible = true;
+          // Wait for marker stability before showing content
+          stabilityTimeout = setTimeout(() => {
+            discoveredConstellations.add('Big Dipper');
+            updateConstellationCount();
+            updateStatus(true, 'Big Dipper detected! Tap to explore');
+            currentConstellation = 'bigdipper';
+            
+            const infoBox = document.getElementById('infoBox');
+            const infoText = document.getElementById('infoText');
+            
+            infoText.innerHTML = `
+              <strong>The Big Dipper (Ursa Major)</strong>
+              <p>The Big Dipper is one of the most recognizable patterns in the northern night sky. It's an asterism 
+              made up of seven bright stars of the constellation Ursa Major (Great Bear).</p>
+              <div class="fun-fact">
+                <div class="fun-fact-label">✨ Key Features</div>
+                • Seven bright stars: Dubhe, Merak, Phecda, Megrez, Alioth, Mizar, and Alkaid<br>
+                • The two stars Dubhe and Merak are known as "The Pointers" as they point to Polaris (North Star)<br>
+                • Used for centuries as a navigation tool
+              </div>
+              <div class="fun-fact">
+                <div class="fun-fact-label">🌟 Did You Know?</div>
+                All the stars of the Big Dipper except Alkaid and Dubhe are moving through space in the same direction, forming the Ursa Major Moving Group.
+              </div>
+            `;
+            infoBox.classList.add('show');
+            speak('Big Dipper detected! This famous asterism is part of the Great Bear constellation. Tap to learn about its stars.');
+          }, 300); // Short delay for stability
+        }
+      });
+      
+      marker.addEventListener('markerLost', () => {
+        markerVisible = false;
+        clearTimeout(stabilityTimeout);
+        updateStatus(false);
+        document.getElementById('infoBox').classList.remove('show');
+        currentConstellation = null;
+        const plane = document.querySelector('#bigdipper');
+        if (plane) {
+          plane.setAttribute('src', 'Constellations/png/bigdipper.png');
+        }
+      });
+    });
+
+    // Little Dipper marker detection
+    window.addEventListener('load', () => {
+      const littleMarker = document.querySelector('a-marker[url*="littledipper"]');
+      let markerVisible = false;
+      let stabilityTimeout;
+
+      if (littleMarker) {
+        littleMarker.addEventListener('markerFound', () => {
+          if (!markerVisible) {
+            markerVisible = true;
+            stabilityTimeout = setTimeout(() => {
+              discoveredConstellations.add('Little Dipper');
+              updateConstellationCount();
+              updateStatus(true, 'Little Dipper detected! Tap to explore');
+              currentConstellation = 'littledipper';
+              
+              const infoBoxLittle = document.getElementById('infoBoxLittle');
+              const infoTextLittle = document.getElementById('infoTextLittle');
+              
+              infoTextLittle.innerHTML = `
+                <strong>The Little Dipper (Ursa Minor)</strong>
+                <p>The Little Dipper, part of Ursa Minor (Little Bear), is anchored by Polaris, the North Star, 
+                making it one of the most important patterns in celestial navigation.</p>
+                <div class="fun-fact">
+                  <div class="fun-fact-label">✨ Key Features</div>
+                  • Polaris (North Star) at the end of the handle<br>
+                  • Seven main stars forming the dipper shape<br>
+                  • Used for navigation worldwide
+                </div>
+                <div class="fun-fact">
+                  <div class="fun-fact-label">🧭 Navigation Tip</div>
+                  Polaris remains nearly stationary in the night sky, making it the perfect reference point for navigation.
+                </div>
+              `;
+              infoBoxLittle.classList.add('show');
+              speak('Little Dipper detected! This constellation contains Polaris, the North Star, at the tip of its handle.');
+            }, 300);
+          }
+        });
+        
+        littleMarker.addEventListener('markerLost', () => {
+          markerVisible = false;
+          clearTimeout(stabilityTimeout);
+          updateStatus(false);
+          document.getElementById('infoBoxLittle').classList.remove('show');
+          currentConstellation = null;
+        });
+      }
+    });
+
+    // Unified click/touch handler using a single raycast against the A-Frame canvas
+    (function() {
+      const scene = document.querySelector('a-scene');
+
+      function setupUnifiedClick() {
+        const planeBig = document.querySelector('#bigdipper');
+        const planeLittle = document.querySelector('#littledipper');
+        if (!scene || !scene.camera || !scene.canvas || !planeBig || !planeLittle) {
+          return setTimeout(setupUnifiedClick, 100);
+        }
+
+        const canvas = scene.canvas;
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+
+        function getPoint(ev) { return ev.touches ? ev.touches[0] : ev; }
+
+        function computeMouse(ev) {
+          const rect = canvas.getBoundingClientRect();
+          const p = getPoint(ev);
+          mouse.x = ((p.clientX - rect.left) / rect.width) * 2 - 1;
+          mouse.y = -((p.clientY - rect.top) / rect.height) * 2 + 1;
+        }
+
+        function onSelect(ev) {
+          // Ignore clicks inside the info boxes
+          if (ev.target.closest && (ev.target.closest('#infoBox') || ev.target.closest('#infoBoxLittle'))) return;
+
+          ev.preventDefault();
+          computeMouse(ev);
+          raycaster.setFromCamera(mouse, scene.camera);
+
+          // Intersect both planes and pick the nearest hit (if any)
+          const intersects = raycaster.intersectObjects([planeBig.object3D, planeLittle.object3D], true);
+          if (!intersects || intersects.length === 0) return;
+
+          // Find which root object (plane object3D) the intersected mesh belongs to
+          let picked = null;
+          let obj = intersects[0].object;
+          while (obj) {
+            if (obj === planeBig.object3D) { picked = 'big'; break; }
+            if (obj === planeLittle.object3D) { picked = 'little'; break; }
+            obj = obj.parent;
+          }
+
+          if (picked === 'big') {
+            document.getElementById('infoBoxLittle').classList.remove('show');
+            document.getElementById('infoBox').classList.add('show');
+            try { planeBig.setAttribute('src', 'Constellations/bigdipper-with-name.png'); } catch(e) {}
+            return;
+          }
+
+          if (picked === 'little') {
+            document.getElementById('infoBox').classList.remove('show');
+            document.getElementById('infoBoxLittle').classList.add('show');
+            try { planeLittle.setAttribute('src', 'Constellations/littledipper-with-name.png'); } catch(e) {}
+            return;
+          }
+        }
+
+        canvas.addEventListener('click', onSelect, false);
+        canvas.addEventListener('touchstart', onSelect, { passive: false });
+      }
+
+      setupUnifiedClick();
+    })();
+
+    // Close button handlers
+    document.getElementById('closeInfo').addEventListener('click', () => {
+      document.getElementById('infoBox').classList.remove('show');
+      const plane = document.querySelector('#bigdipper');
+      try {
+        plane.setAttribute('src', 'Constellations/bigdipper.png');
+      } catch(e) {}
+    });
+
+    document.getElementById('closeInfoLittle').addEventListener('click', () => {
+      document.getElementById('infoBoxLittle').classList.remove('show');
+      const plane = document.querySelector('#littledipper');
+      try {
+        plane.setAttribute('src', 'Constellations/littledipper.png');
+      } catch(e) {}
+    });
+
+    // Show Stars button handlers
+    document.getElementById('showStarsBtn').addEventListener('click', () => {
+      const plane = document.querySelector('#bigdipper');
+      try {
+        plane.setAttribute('src', 'Constellations/bigdipper-with-name.png');
+      } catch(e) {
+        console.warn('Failed to update image', e);
+      }
+      
+      const infoText = document.getElementById('infoText');
+      const ul = document.createElement('ul');
+      
+      stars.forEach((star, index) => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <div class="star-name">${index + 1}. ${star.name}</div>
+          <div>${star.note}</div>
+          <div class="fun-fact" style="margin-top: 8px; font-size: 12px;">
+            <div class="fun-fact-label">💫 Fun Fact</div>
+            ${star.fact}
+          </div>
+        `;
+        ul.appendChild(li);
+      });
+      
+      infoText.innerHTML = '<strong>Explore the Seven Stars of the Big Dipper:</strong>';
+      infoText.appendChild(ul);
+      
+      const speechString = stars.map(s => `${s.name}: ${s.note}`).join('. ');
+      speak('Revealing the seven stars. ' + speechString);
+    });
+
+    document.getElementById('showStarsBtnLittle').addEventListener('click', () => {
+      const plane = document.querySelector('#littledipper');
+      try {
+        plane.setAttribute('src', 'Constellations/littledipper-with-name.png');
+      } catch(e) {}
+      
+      const infoTextLittle = document.getElementById('infoTextLittle');
+      const ul = document.createElement('ul');
+      
+      littleStars.forEach((star, index) => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <div class="star-name">${index + 1}. ${star.name}</div>
+          <div>${star.note}</div>
+          <div class="fun-fact" style="margin-top: 8px; font-size: 12px;">
+            <div class="fun-fact-label">💫 Fun Fact</div>
+            ${star.fact}
+          </div>
+        `;
+        ul.appendChild(li);
+      });
+      
+      infoTextLittle.innerHTML = '<strong>Discover the Stars of the Little Dipper:</strong>';
+      infoTextLittle.appendChild(ul);
+      
+      const speechString = littleStars.map(s => `${s.name}: ${s.note}`).join('. ');
+      speak('Revealing the Little Dipper stars. ' + speechString);
+    });
+
+    // Speak button handlers
+    document.getElementById('speakBtn').addEventListener('click', () => {
+      const text = document.getElementById('infoText').textContent;
+      speak(text);
+    });
+
+    document.getElementById('speakBtnLittle').addEventListener('click', () => {
+      const text = document.getElementById('infoTextLittle').textContent;
+      speak(text);
+    });
+
+    // Stop buttons to immediately cancel speech
+    document.getElementById('stopSpeak').addEventListener('click', () => {
+      if (synth) synth.cancel();
+    });
+
+    document.getElementById('stopSpeakLittle').addEventListener('click', () => {
+      if (synth) synth.cancel();
+    });
+
+    // Speech synthesis function
+    function speak(text) {
+      if (synth) {
+        synth.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 0.9;
+        utterance.pitch = 1;
+        synth.speak(utterance);
+      }
+    }
+
+    // Orion marker detection
+    window.addEventListener('load', () => {
+      const markers = document.querySelectorAll('a-marker');
+      const orionMarker = markers[2];
+      
+      if (orionMarker) {
+        orionMarker.addEventListener('markerFound', () => {
+          discoveredConstellations.add('Orion');
+          updateConstellationCount();
+          updateStatus(true, 'Orion detected! Tap to explore');
+          currentConstellation = 'orion';
+          
+          const infoBoxOrion = document.getElementById('infoBoxOrion');
+          const infoTextOrion = document.getElementById('infoTextOrion');
+          
+          infoTextOrion.innerHTML = `
+            <strong>The Orion constellation is one of the most recognizable patterns in the night sky, named after a hunter in Greek mythology.</strong>
+            <div class="fun-fact">
+              <div class="fun-fact-label">✨ Did You Know?</div>
+              Orion contains two of the brightest stars visible from Earth: Betelgeuse and Rigel!
+            </div>
+          `;
+          infoBoxOrion.classList.add('show');
+          speak('Orion detected! This constellation represents the mythical hunter Orion. Tap to learn more about its stars.');
+        });
+        
+        orionMarker.addEventListener('markerLost', () => {
+          updateStatus(false);
+          document.getElementById('infoBoxOrion').classList.remove('show');
+          currentConstellation = null;
+          // Reset image when marker is lost
+          const plane = document.querySelector('#orion');
+          try {
+            plane.setAttribute('src', 'Constellations/png/orion.png');
+            orionShowingSign = false;
+          } catch(e) {
+            console.error('Error resetting Orion image:', e);
+          }
+        });
+      }
+    });
+
+    // Show sign button handler for Orion
+    let orionShowingSign = false;
+    document.getElementById('showSignOrion').addEventListener('click', function() {
+      const plane = document.querySelector('#orion');
+      console.log('Show sign button clicked');
+      if (plane) {
+        if (!orionShowingSign) {
+          plane.setAttribute('src', 'Constellations/png/orion-with-sign.png');
+          console.log('Showing Orion sign');
+          speak('Showing Orion zodiac sign.');
+          orionShowingSign = true;
+        } else {
+          plane.setAttribute('src', 'Constellations/png/orion.png');
+          console.log('Showing Orion constellation');
+          speak('Showing Orion constellation.');
+          orionShowingSign = false;
+        }
+      } else {
+        console.error('Could not find Orion element with id "orion"');
+      }
+    });
+
+    // Speak button handler for Orion
+    document.getElementById('speakBtnOrion').addEventListener('click', () => {
+      const text = document.getElementById('infoTextOrion').textContent;
+      speak(text);
+    });
+
+    // Stop button handler for Orion
+    document.getElementById('stopSpeakOrion').addEventListener('click', () => {
+      if (synth) synth.cancel();
+    });
+  </script>
+
+  <!-- Orion Info Box -->
+  <div id="infoBoxOrion" class="info-box">
+    <div class="info-content">
+      <div id="infoTextOrion"></div>
+      <div class="button-group">
+        <button id="showSignOrion" class="btn btn-show-stars">
+          <span>Show Sign</span>
+        </button>
+        <button id="speakBtnOrion" class="btn btn-speak">
+          <span>Speak</span>
+        </button>
+        <button id="stopSpeakOrion" class="btn btn-close">
+          <span>Stop</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
