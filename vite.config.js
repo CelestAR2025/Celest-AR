@@ -1,10 +1,11 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
+// ✅ Make sure the base matches your repo name exactly (case-sensitive)
 export default defineConfig({
+  base: '/Celest-AR/',
   plugins: [react()],
-  base: '/Celest-AR/',  
-  esbuild: {
-    jsx: 'automatic', // O kaya `transform` depende sa error
+  build: {
+    outDir: 'dist',
   },
 })
